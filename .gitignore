@@ -1,0 +1,8 @@
+# Files
+config.json
+*.tsbuildinfo
+
+#Folders
+.idea/
+node_modules/
+dist/
