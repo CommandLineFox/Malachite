@@ -26,7 +26,7 @@ export default class MessageDelete extends Event {
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
 
-            if (!guildDb?.config.channels?.duplicateSearch || message.channel.id !== guildDb.config.channels.duplicateSearch || !guildDb.config.channels.duplicateLog) {
+            if (!guildDb?.config.duplicateDetection || !guildDb.config.channels?.duplicateSearch || message.channel.id !== guildDb.config.channels.duplicateSearch || !guildDb.config.channels.duplicateLog) {
                 return;
             }
 
