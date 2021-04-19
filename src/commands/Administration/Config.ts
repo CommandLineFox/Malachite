@@ -178,7 +178,7 @@ async function duplicateSearchSettings(event: CommandEvent, option: string, args
     await databaseCheck(database, guild, "channels");
 
     if (!option) {
-        await displayData(event, guild, "prefix", true);
+        await displayData(event, guild, "search", true);
         return;
     }
 
@@ -209,7 +209,7 @@ async function duplicateLogSettings(event: CommandEvent, option: string, args: s
     await databaseCheck(database, guild, "channels");
 
     if (!option) {
-        await displayData(event, guild, "prefix", true);
+        await displayData(event, guild, "deletion", true);
         return;
     }
 
