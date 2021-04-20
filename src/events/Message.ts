@@ -43,8 +43,7 @@ export default class MessageEvent extends Event {
                     });
                 return;
             }
-
-            const logs = await client.database.messages.find({ guild: guild.id, user: message.author.id, content: message.content, creation: { "$gt": Date.now() - 172800000 } }).toArray();
+            /*const logs = await client.database.messages.find({ guild: guild.id, user: message.author.id, content: message.content, creation: { "$gt": Date.now() - 172800000 } }).toArray();
             if (logs.length > 0) {
                 message.delete();
                 message.channel.send("Please wait 48 hours before reposting.")
@@ -54,7 +53,7 @@ export default class MessageEvent extends Event {
                         }, 10000);
                     });
                 return;
-            }
+            }*/
 
         } catch (error) {
             client.emit("error", error);

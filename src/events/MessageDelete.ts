@@ -36,7 +36,7 @@ export default class MessageDelete extends Event {
                 return;
             }
 
-            database.messages.insertOne({ user: message.author.id, guild: guild.id, content: message.content, creation: message.createdTimestamp });
+            //database.messages.insertOne({ user: message.author.id, guild: guild.id, content: message.content, creation: message.createdTimestamp });
             const date = new Date(Date.now());
             const author = message.author;
 
