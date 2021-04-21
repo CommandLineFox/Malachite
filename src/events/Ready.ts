@@ -11,7 +11,7 @@ export default class Ready extends Event {
 
         const database = client.database;
         client.interval = setInterval(async () => {
-            database.messages.deleteMany({ creation: {"$lt": Date.now() - 172800000}});
+            database.messages.deleteMany({ creation: {"$lt": Date.now() - client.config.delay}});
         }, 30000);
     }
 }

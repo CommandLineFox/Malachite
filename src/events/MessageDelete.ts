@@ -36,7 +36,13 @@ export default class MessageDelete extends Event {
                 return;
             }
 
-            //database.messages.insertOne({ user: message.author.id, guild: guild.id, content: message.content, creation: message.createdTimestamp });
+            if (message.createdTimestamp < Date.now() - 5000) {
+                const row = await database.messages.findOne({ user: message.author.id, guild: guild.id, content: message.content });
+                if (!row) {
+                    database.messages.insertOne({ user: message.author.id, guild: guild.id, content: message.content, creation: message.createdTimestamp });
+                }
+            }
+
             const date = new Date(Date.now());
             const author = message.author;
 

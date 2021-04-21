@@ -1,6 +1,7 @@
 import Event from "@event/Event";
 import { Message, TextChannel } from "discord.js";
 import BotClient from "~/BotClient";
+import moment from "moment";
 
 export default class MessageEvent extends Event {
     public constructor() {
@@ -31,11 +32,17 @@ export default class MessageEvent extends Event {
                 return;
             }
 
-            const fetch = await (channel as TextChannel).messages.fetch({ limit: 100 });
-            const messages = fetch.filter(msg => msg.createdTimestamp > Date.now() - 172800000 && msg.content === message.content && msg != message);
-            if (messages.size > 0) {
+            const delay = client.config.delay;
+            const fetch = (await (channel as TextChannel).messages.fetch({ limit: 100 })).array();
+            const messages = fetch.filter(msg => msg.createdTimestamp > Date.now() - delay && msg.channel === message.channel && msg.author === message.author && msg.content === message.content && msg != message)
+                .sort((a, b) => a.createdTimestamp - b.createdTimestamp);
+
+            if (messages.length > 0) {
                 message.delete();
-                message.channel.send("Please wait 48 hours before reposting.")
+
+                const time = messages[messages.length - 1].createdTimestamp;
+                const difference = moment(time! + delay).fromNow(true);
+                message.channel.send(`<@${message.author.id}> please wait ${difference} before reposting.`)
                     .then((msg) => {
                         setTimeout(() => {
                             msg.delete();
@@ -43,18 +50,21 @@ export default class MessageEvent extends Event {
                     });
                 return;
             }
-            /*const logs = await client.database.messages.find({ guild: guild.id, user: message.author.id, content: message.content, creation: { "$gt": Date.now() - 172800000 } }).toArray();
+
+            const logs = (await client.database.messages.find({ guild: guild.id, user: message.author.id, content: message.content, creation: { "$gt": Date.now() - delay } }).toArray()).sort((a, b) => a.creation - b.creation);
             if (logs.length > 0) {
                 message.delete();
-                message.channel.send("Please wait 48 hours before reposting.")
+
+                const time = logs[logs.length - 1].creation;
+                const difference = moment(time! + delay).fromNow(true);
+                message.channel.send(`<@${message.author.id}> please wait ${difference} before reposting.`)
                     .then((msg) => {
                         setTimeout(() => {
                             msg.delete();
                         }, 10000);
                     });
                 return;
-            }*/
-
+            }
         } catch (error) {
             client.emit("error", error);
         }

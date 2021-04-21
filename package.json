@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlexArcticFox/Pokelust.git"
+    "url": "git+https://github.com/CommandLineFox/Pokelust.git"
   },
-  "author": "AlexArcticFox",
+  "author": "CommandLineFox",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/AlexArcticFox/Pokelust/issues"
+    "url": "https://github.com/CommandLineFox/Pokelust/issues"
   },
-  "homepage": "https://github.com/AlexArcticFox/Pokelust#readme",
+  "homepage": "https://github.com/CommandLineFox/Pokelust#readme",
   "devDependencies": {
     "@types/node": "^14.14.41",
     "tscpaths": "^0.0.9",
