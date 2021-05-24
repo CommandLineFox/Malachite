@@ -358,6 +358,14 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
 
                 return `${event.guild.channels.cache.get(guild.config.channels.duplicateLog)}`;
             }
+
+            case "time": {
+                if (!guild.config.time) {
+                    return "Not set";
+                }
+
+                return `${formatDuration(new Date(Date.now() + guild.config.time), true)}`;
+            }
         }
     } else {
         switch (type.toLowerCase()) {
@@ -416,6 +424,16 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 }
 
                 await event.send(`The channel to log deleted messages in <#${event.guild.channels.cache.get(guild.config.channels.duplicateLog)}>`);
+                break;
+            }
+
+            case "time": {
+                if (!guild.config.time) {
+                    event.send("The time period hasn't been set.");
+                    return;
+                }
+
+                await event.send(`The time period is set to ${formatDuration(new Date(Date.now() + guild.config.time), true)}`);
                 break;
             }
         }
