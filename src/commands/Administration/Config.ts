@@ -277,6 +277,7 @@ async function displayAllSettings(event: CommandEvent, guild: Guild) {
         .addField("Duplicate detection", await displayData(event, guild, "detection"), true)
         .addField("Duplicate search", await displayData(event, guild, "search"), true)
         .addField("Deletion log", await displayData(event, guild, "deletion"), true)
+        .addField("Time", await displayData(event, guild, "time"), true)
         .setFooter(`Requested by ${event.author.tag}`, event.author.displayAvatarURL());
 
     event.send({ embed: embed });
