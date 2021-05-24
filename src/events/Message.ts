@@ -32,7 +32,11 @@ export default class MessageEvent extends Event {
                 return;
             }
 
-            const delay = client.config.delay;
+            const delay = guild.config.time;
+            if (!delay) {
+                return;
+            }
+
             const fetch = (await (channel as TextChannel).messages.fetch({ limit: 100 })).array();
             const messages = fetch.filter(msg => msg.createdTimestamp > Date.now() - delay && msg.channel === message.channel && msg.author === message.author && msg.content === message.content && msg != message)
                 .sort((a, b) => a.createdTimestamp - b.createdTimestamp);

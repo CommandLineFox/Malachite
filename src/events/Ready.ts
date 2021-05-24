@@ -11,7 +11,15 @@ export default class Ready extends Event {
 
         const database = client.database;
         client.interval = setInterval(async () => {
-            database.messages.deleteMany({ creation: {"$lt": Date.now() - client.config.delay}});
+            const guilds = client.guilds.cache.array();
+            for (const server of guilds) {
+                const guild = await database.getGuild(server.id);
+                if (!guild?.config.time) {
+                    continue;
+                }
+
+                database.messages.deleteMany({ guild: guild.id, creation: { "$lt": Date.now() - guild.config.time } });
+            }
         }, 30000);
     }
 }

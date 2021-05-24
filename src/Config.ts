@@ -1,10 +1,9 @@
-import { string, base, array, object, boolean, optional, optionalArray, number } from "~/ConfigHandler";
+import { string, base, array, object, boolean, optional, optionalArray } from "~/ConfigHandler";
 
 export default {
     token: string(""),
     prefix: string("!"),
     owners: array(base.string),
-    delay: number(0),
     options: object({
         disableMentions: optional(base.string),
         partials: optionalArray(base.string)

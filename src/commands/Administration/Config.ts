@@ -3,7 +3,7 @@ import { Administration } from "~/Groups";
 import CommandEvent from "@command/CommandEvent";
 import { Guild } from "@models/Guild";
 import { MessageEmbed } from "discord.js";
-import { splitArguments } from "@utils/Utils";
+import { formatDuration, getDuration, splitArguments } from "@utils/Utils";
 import { Database } from "~/database/Database";
 import { DatabaseCheckOption, DisplayData } from "~/utils/Types";
 
@@ -56,6 +56,11 @@ export default class Config extends Command {
 
                 case "log": {
                     await duplicateLogSettings(event, option, args, guild);
+                    break;
+                }
+
+                case "time": {
+                    await timeSettings(event, option, args, guild);
                     break;
                 }
             }
@@ -229,6 +234,36 @@ async function duplicateLogSettings(event: CommandEvent, option: string, args: s
         case "remove": {
             await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.duplicateLog": "" } });
             await event.send("The channel to log deleted messages in has been removed.");
+            break;
+        }
+    }
+}
+
+async function timeSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+
+    if (!option) {
+        await displayData(event, guild, "time", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const duration = getDuration(args);
+            if (!duration) {
+                event.send("You need to enter a valid number of ms.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.time": duration } });
+            await event.send(`The time period has been set to \`${formatDuration(new Date(Date.now() + duration), true)}\`.`);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.time": "" } });
+            await event.send("The time period has been removed.");
             break;
         }
     }

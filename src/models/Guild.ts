@@ -14,6 +14,7 @@ export interface GuildConfig {
     roles?: Roles;
     channels?: Channels;
     duplicateDetection?: boolean;
+    time?: number;
 }
 
 export interface Guild {

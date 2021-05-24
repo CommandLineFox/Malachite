@@ -80,3 +80,39 @@ export function formatDuration(date: Date, withoutSuffix?: boolean): string {
 export function formatUser(user: User): string {
     return `**${user.tag} (${user.id})**`;
 }
+
+
+export function getDuration(argument: string): number | undefined {
+    if (argument.length === 0) {
+        return;
+    }
+
+    const regex = argument.toLowerCase().match(/^(?<amount>[0-9]+)(?<type>[smhdy]?)$/);
+    if (regex && regex.groups) {
+        const amount = parseInt(regex.groups.amount);
+
+        switch (regex.groups.type) {
+            case "m": {
+                return amount * 60 * 1000;
+            }
+
+            case "h": {
+                return amount * 60 * 60 * 1000;
+            }
+
+            case "d": {
+                return amount * 24 * 60 * 60 * 1000;
+            }
+
+            case "y": {
+                return amount * 365 * 24 * 60 * 60 * 1000;
+            }
+
+            default: {
+                return amount * 1000;
+            }
+        }
+    }
+
+    return;
+}
