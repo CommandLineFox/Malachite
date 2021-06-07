@@ -55,12 +55,12 @@ export default class MessageDelete extends Event {
 
             if (file) {
                 const content = formatMessageDelete(message, true);
-                const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted ${channel} that was sent **${creation} ago**:`;
+                const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted from ${channel} that was sent **${creation} ago**:\n**Content:**`;
                 const attachment = { attachment: Buffer.from(content, "utf8"), name: "DeleteLog.txt" };
                 log.send(line, { files: [attachment] });
             } else {
                 const content = formatMessageDelete(message);
-                const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted ${channel} that was sent **${creation} ago**: ${content}`;
+                const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted from ${channel} that was sent **${creation} ago**: ${content}`;
                 log.send(line);
             }
         } catch (error) {
@@ -70,13 +70,13 @@ export default class MessageDelete extends Event {
 }
 
 function formatChannel(channel: TextChannel): string {
-    return `in the **${channel.name}** (<#${channel.id}>) channel`;
+    return `**${channel.name}** (<#${channel.id}>)`;
 }
 
 function formatMessageDelete(message: Message, file?: boolean): string {
     const content = sanitize(message.cleanContent);
     if (file) {
-        return `Content: ${content}`;
+        return `${content}`;
     }
     return `**\nContent:** ${content}`;
 }
