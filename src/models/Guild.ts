@@ -2,11 +2,13 @@ import { ObjectId } from "bson";
 
 export interface Roles {
     moderator?: string[];
+    member?: string;
 }
 
 export interface Channels {
     duplicateLog?: string;
     duplicateSearch?: string;
+    leaveChannel?: string;
 }
 
 export interface GuildConfig {
@@ -15,6 +17,8 @@ export interface GuildConfig {
     channels?: Channels;
     duplicateDetection?: boolean;
     time?: number;
+    leaveNotification?: boolean;
+    leaveMessage?: string;
 }
 
 export interface Guild {

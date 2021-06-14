@@ -63,6 +63,26 @@ export default class Config extends Command {
                     await timeSettings(event, option, args, guild);
                     break;
                 }
+
+                case "leavemessage": {
+                    await leaveMessageSettings(event, option, args, guild);
+                    break;
+                }
+
+                case "leavenotification": {
+                    await leaveNotificationSettings(event, option, guild);
+                    break;
+                }
+
+                case "leavechannel": {
+                    await leaveChannelSettings(event, option, args, guild);
+                    break;
+                }
+
+                case "member": {
+                    await memberRoleSettings(event, option, args, guild);
+                    break;
+                }
             }
         } catch (error) {
             console.log(error);
@@ -101,7 +121,7 @@ async function prefixSettings(event: CommandEvent, option: string, args: string,
 
 async function moderatorSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
     const database = event.client.database;
-    await databaseCheck(database, guild, "moderator");
+    guild = await databaseCheck(database, guild, "moderator");
 
     if (!option) {
         await displayData(event, guild, "moderators", true);
@@ -143,7 +163,6 @@ async function moderatorSettings(event: CommandEvent, option: string, args: stri
     }
 }
 
-
 async function duplicateDetectionSettings(event: CommandEvent, option: string, guild: Guild) {
     const database = event.client.database;
 
@@ -180,7 +199,7 @@ async function duplicateDetectionSettings(event: CommandEvent, option: string, g
 async function duplicateSearchSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
     const client = event.client;
     const database = client.database;
-    await databaseCheck(database, guild, "channels");
+    guild = await databaseCheck(database, guild, "channels");
 
     if (!option) {
         await displayData(event, guild, "search", true);
@@ -211,7 +230,7 @@ async function duplicateSearchSettings(event: CommandEvent, option: string, args
 async function duplicateLogSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
     const client = event.client;
     const database = client.database;
-    await databaseCheck(database, guild, "channels");
+    guild = await databaseCheck(database, guild, "channels");
 
     if (!option) {
         await displayData(event, guild, "deletion", true);
@@ -269,6 +288,149 @@ async function timeSettings(event: CommandEvent, option: string, args: string, g
     }
 }
 
+async function leaveChannelSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+    guild = await databaseCheck(database, guild, "channels");
+
+    if (!option) {
+        await displayData(event, guild, "leavechannel", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const channel = event.guild.channels.cache.find(channel => channel.name === args || channel.id === args || `<#${channel.id}>` === args);
+            if (!channel) {
+                event.send("Couldn't find the channel you're looking for.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.channels.leaveChannel": channel.id } });
+            await event.send(`The channel to send leave notifications in has been set to \`${channel.name}\`.`);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.leaveChannel": "" } });
+            await event.send("The channel to search for duplicate messages in has been removed.");
+            break;
+        }
+    }
+}
+
+async function leaveNotificationSettings(event: CommandEvent, option: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "leavenotification", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "enable": {
+            if (guild.config.leaveNotification === true) {
+                event.send("Leave notifications are already enabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$set": { "config.leaveNotification": true } });
+            await event.send("Successfully enabled leave notifications.");
+            break;
+        }
+
+        case "disable": {
+            if (guild.config.leaveNotification !== true) {
+                event.send("Leave notifications are already disabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.leaveNotification": "" } });
+            await event.send("Successfully disabled leave notificatons.");
+            break;
+        }
+    }
+}
+
+async function leaveMessageSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+
+    if (!option) {
+        await displayData(event, guild, "leavemessage", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            await database.guilds.updateOne({ id: guild?.id }, { "$set": { "config.leaveMessage": args } });
+            await event.send(`The leave message has been set to \`${args}\``);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild?.id }, { "$unset": { "config.leaveMessage": "" } });
+            await event.send("The leave message has been removed");
+            break;
+        }
+    }
+}
+
+async function memberRoleSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const database = event.client.database;
+    guild = await databaseCheck(database, guild, "roles");
+
+    if (!option) {
+        await displayData(event, guild, "member", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const member = args;
+
+            if (!member) {
+                event.send("You need to specify a role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.find(role => role.id === member || role.name === member || `<@&${role.id}>` === member);
+
+            if (!role) {
+                event.send("Couldn't find the role you're looking for.");
+                return;
+            }
+
+            if (guild.config.roles?.member === role.id) {
+                event.send("The specified role is already set as the member role.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.member": role.id } });
+            await event.send(`Set \`${role.name}\` as the member role.`);
+            break;
+        }
+
+        case "remove": {
+            if (!guild.config.roles?.member) {
+                event.send("No role is specified as the member role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.get(guild.config.roles.member);
+            if (!role) {
+                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.member": "" } });
+                await event.send("The role that used to be the member role was deleted or can't be found.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.member": "" } });
+            await event.send(`\`${role.name}\` is no longer the member role.`);
+            break;
+        }
+    }
+}
+
 async function displayAllSettings(event: CommandEvent, guild: Guild) {
     const embed = new MessageEmbed()
         .setTitle("The current settings for this server:")
@@ -278,16 +440,21 @@ async function displayAllSettings(event: CommandEvent, guild: Guild) {
         .addField("Duplicate search", await displayData(event, guild, "search"), true)
         .addField("Deletion log", await displayData(event, guild, "deletion"), true)
         .addField("Time", await displayData(event, guild, "time"), true)
+        .addField("Member role", await displayData(event, guild, "member"), true)
+        .addField("Leave notifications", await displayData(event, guild, "leavenotification"), true)
+        .addField("Leave channel", await displayData(event, guild, "leavechannel"), true)
+        .addField("Leave message", await displayData(event, guild, "leavemessage"), true)
         .setFooter(`Requested by ${event.author.tag}`, event.author.displayAvatarURL());
 
     event.send({ embed: embed });
 }
 
-async function databaseCheck(database: Database, guild: Guild, option: DatabaseCheckOption): Promise<void> {
+async function databaseCheck(database: Database, guild: Guild, option: DatabaseCheckOption): Promise<Guild> {
     switch (option.toLowerCase()) {
         case "roles": {
             if (!guild.config.roles) {
                 await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles": {} } });
+                guild.config.roles = {};
             }
             break;
         }
@@ -295,8 +462,10 @@ async function databaseCheck(database: Database, guild: Guild, option: DatabaseC
         case "moderator": {
             if (!guild.config.roles) {
                 await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles": { "moderator": [] } } });
+                guild.config.roles = { moderator: [] };
             } else if (!guild.config.roles?.moderator) {
                 await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.moderator": [] } });
+                guild.config.roles.moderator = [];
             }
             break;
         }
@@ -304,10 +473,13 @@ async function databaseCheck(database: Database, guild: Guild, option: DatabaseC
         case "channels": {
             if (!guild.config.channels) {
                 await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.channels": {} } });
+                guild.config.channels = {};
             }
             break;
         }
     }
+
+    return guild;
 }
 
 async function displayData(event: CommandEvent, guild: Guild, type: DisplayData, specific?: boolean): Promise<any> {
@@ -366,6 +538,46 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 }
 
                 return `${formatDuration(new Date(Date.now() + guild.config.time), true)}`;
+            }
+
+            case "leavenotification": {
+                return guild.config.leaveNotification === true ? "Enabled" : "Disabled";
+            }
+
+            case "leavechannel": {
+                if (!guild.config.channels?.leaveChannel) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.leaveChannel": "" } });
+                    return "None";
+                }
+
+                return `${event.guild.channels.cache.get(guild.config.channels.leaveChannel)}`;
+            }
+
+            case "leavemessage": {
+                if (!guild.config.leaveMessage) {
+                    return "None";
+                }
+
+                return guild.config.leaveMessage;
+            }
+
+            case "member": {
+                if (!guild.config.roles) {
+                    return "Not set up";
+                }
+
+                const id = guild.config.roles.member;
+                if (!id) {
+                    return "No mute role";
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.member": "" } });
+                    return "No member role";
+                }
+
+                return role.name;
             }
         }
     } else {
@@ -435,6 +647,35 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 }
 
                 await event.send(`The time period is set to ${formatDuration(new Date(Date.now() + guild.config.time), true)}`);
+                break;
+            }
+
+            case "leavechannel": {
+                if (!guild.config.channels?.leaveChannel) {
+                    event.send("There's no channel post leave notifications in.");
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.leaveChannel": "" } });
+                    return;
+                }
+
+                await event.send(`The channel to post leave notifications in is <#${event.guild.channels.cache.get(guild.config.channels.leaveChannel)}>`);
+                break;
+            }
+
+            case "muterole": {
+                const id = guild.config.roles?.member;
+                if (!id) {
+                    event.send("There is no role set as the member role.");
+                    return;
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.member": "" } });
+                    await event.send("The role that used to be the member role was deleted or can't be found.");
+                    return;
+                }
+
+                await event.send(`\`${role.name}\` is set as the member role.`);
                 break;
             }
         }
