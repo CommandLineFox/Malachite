@@ -62,15 +62,15 @@ export function sanitize(argument: string): string {
 }
 
 export function formatTime(date: Date, file?: boolean): string {
-    const hours = `0${date.getUTCHours()}`.slice(-2);
-    const minutes = `0${date.getUTCMinutes()}`.slice(-2);
-    const seconds = `0${date.getUTCSeconds()}`.slice(-2);
-
     if (file) {
+        const hours = `0${date.getUTCHours()}`.slice(-2);
+        const minutes = `0${date.getUTCMinutes()}`.slice(-2);
+        const seconds = `0${date.getUTCSeconds()}`.slice(-2);
         return `[${hours}:${minutes}:${seconds}]`;
     }
 
-    return `[\`${hours}:${minutes}:${seconds}\`]`;
+    const time = Math.floor(date.getTime() / 1000);
+    return `[<t:${time}:T>]`;
 }
 
 export function formatDuration(date: Date, withoutSuffix?: boolean): string {

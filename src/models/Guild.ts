@@ -1,28 +1,48 @@
 import { ObjectId } from "bson";
 
-export interface Roles {
+interface Roles {
     moderator?: string[];
     member?: string;
+    unverified?: string;
 }
 
-export interface Channels {
-    duplicateLog?: string;
-    duplicateSearch?: string;
-    leaveChannel?: string;
+interface Verification {
+    enabled?: boolean;
+    channel?: string;
+    log?: string;
 }
 
-export interface GuildConfig {
+interface Welcome {
+    notification?: boolean;
+    channel?: string;
+    message?: string;
+}
+
+interface LeaveLog {
+    notification?: boolean;
+    message?: string;
+    channel?: string;
+    emote?: string;
+}
+
+interface Duplicates {
+    detection?: boolean;
+    log?: string;
+    search?: string;
+    time?: number;
+}
+
+interface Config {
     prefix?: string;
     roles?: Roles;
-    channels?: Channels;
-    duplicateDetection?: boolean;
-    time?: number;
-    leaveNotification?: boolean;
-    leaveMessage?: string;
+    duplicates?: Duplicates;
+    leaveLog?: LeaveLog;
+    verification?: Verification;
+    welcome?: Welcome;
 }
 
 export interface Guild {
     _id: ObjectId;
     id: string;
-    config: GuildConfig;
+    config: Config;
 }

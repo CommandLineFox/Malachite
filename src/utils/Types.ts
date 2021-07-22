@@ -1,2 +1,1 @@
-export type DatabaseCheckOption = "roles" | "moderator" | "channels";
-export type DisplayData = "prefix" | "moderators" | "detection" | "search" | "deletion" | "time" | "leavemessage" | "leavenotification" | "leavechannel" | "member";
+export type DisplayData = "prefix" | "moderators" | "detection" | "search" | "deletion" | "time" | "leavemessage" | "leavenotification" | "leavechannel" | "leaveemote" | "member" | "unverified" | "verificationchannel" | "verificationlog" | "welcomechannel" | "welcomemessage" | "welcomenotification";

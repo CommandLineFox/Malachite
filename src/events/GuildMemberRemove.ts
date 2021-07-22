@@ -12,7 +12,7 @@ export default class GuildMemberRemove extends Event {
             const guild = member.guild;
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
-            if (!guildDb?.config.channels?.leaveChannel || !guildDb.config.leaveNotification || !guildDb.config.leaveMessage) {
+            if (!guildDb?.config.leaveLog?.channel || !guildDb.config.leaveLog.notification || !guildDb.config.leaveLog.message) {
                 return;
             }
 
@@ -29,14 +29,17 @@ export default class GuildMemberRemove extends Event {
                 return;
             }
 
-            const channel = guild.channels.cache.get(guildDb.config.channels.leaveChannel) as TextChannel;
+            const channel = guild.channels.cache.get(guildDb.config.leaveLog?.channel) as TextChannel;
             if (!channel) {
                 await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.leaveChannel": "" } });
                 return;
             }
 
-            const line = guildDb.config.leaveMessage.replace("{member}", member.user.tag).replace("{server}", member.guild.name);
-            channel.send(line);
+            const line = guildDb.config.leaveLog?.message.replace("{member}", member.user.tag).replace("{server}", member.guild.name);
+            const message = await channel.send(line);
+            if (guildDb.config.leaveLog.emote) {
+                message.react(guildDb.config.leaveLog.emote);
+            }
         } catch (error) {
             client.emit("error", error);
         }

@@ -14,11 +14,11 @@ export default class Ready extends Event {
             const guilds = client.guilds.cache.array();
             for (const server of guilds) {
                 const guild = await database.getGuild(server.id);
-                if (!guild?.config.time) {
+                if (!guild?.config.duplicates?.time) {
                     continue;
                 }
 
-                database.messages.deleteMany({ guild: guild.id, creation: { "$lt": Date.now() - guild.config.time } });
+                database.messages.deleteMany({ guild: guild.id, creation: { "$lt": Date.now() - guild.config.duplicates.time } });
             }
         }, 30000);
     }

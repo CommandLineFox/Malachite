@@ -26,11 +26,11 @@ export default class MessageDelete extends Event {
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
 
-            if (!guildDb?.config.duplicateDetection || !guildDb.config.channels?.duplicateSearch || message.channel.id !== guildDb.config.channels.duplicateSearch || !guildDb.config.channels.duplicateLog) {
+            if (!guildDb?.config.duplicates?.detection || !guildDb.config.duplicates.search || message.channel.id !== guildDb.config.duplicates.search || !guildDb.config.duplicates.log) {
                 return;
             }
 
-            const log = guild.channels.cache.get(guildDb.config.channels.duplicateLog) as TextChannel;
+            const log = guild.channels.cache.get(guildDb.config.duplicates.log) as TextChannel;
             if (!log) {
                 await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.duplicateLog": "" } });
                 return;

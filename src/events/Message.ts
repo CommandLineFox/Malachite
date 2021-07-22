@@ -19,11 +19,11 @@ export default class MessageEvent extends Event {
             }
 
             const guild = await client.database?.getGuild(message.guild.id);
-            if (!guild?.config.duplicateDetection || !guild.config.channels?.duplicateSearch) {
+            if (!guild?.config.duplicates?.detection || !guild.config.duplicates.search) {
                 return;
             }
 
-            const channel = message.guild.channels.cache.get(guild.config.channels.duplicateSearch);
+            const channel = message.guild.channels.cache.get(guild.config.duplicates.search);
             if (!channel) {
                 await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.duplicateSearch": "" } });
             }
@@ -32,7 +32,7 @@ export default class MessageEvent extends Event {
                 return;
             }
 
-            const delay = guild.config.time;
+            const delay = guild.config.duplicates.time;
             if (!delay) {
                 return;
             }
