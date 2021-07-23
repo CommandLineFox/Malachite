@@ -4,12 +4,21 @@ interface Roles {
     moderator?: string[];
     member?: string;
     unverified?: string;
+    probation?: string;
+    verified?: string;
+    nsfw?: string;
+}
+
+interface Verifications {
+    user: string;
+    message: string;
 }
 
 interface Verification {
     enabled?: boolean;
     channel?: string;
     log?: string;
+    password?: string;
 }
 
 interface Welcome {
@@ -35,6 +44,8 @@ interface Duplicates {
 interface Config {
     prefix?: string;
     roles?: Roles;
+    autoRemoveNsfw?: boolean;
+    autoAddUnverified?: boolean;
     duplicates?: Duplicates;
     leaveLog?: LeaveLog;
     verification?: Verification;
@@ -44,5 +55,6 @@ interface Config {
 export interface Guild {
     _id: ObjectId;
     id: string;
+    verifications: Verifications[];
     config: Config;
 }

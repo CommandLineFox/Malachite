@@ -2,6 +2,7 @@ import Event from "@event/Event";
 import { Message, TextChannel } from "discord.js";
 import BotClient from "~/BotClient";
 import moment from "moment";
+import { verification } from "@utils/Utils";
 
 export default class MessageEvent extends Event {
     public constructor() {
@@ -19,6 +20,10 @@ export default class MessageEvent extends Event {
             }
 
             const guild = await client.database?.getGuild(message.guild.id);
+            if (guild?.config.verification?.enabled && guild.config.verification.password && guild.config.verification.channel && message.channel.id === guild.config.verification.channel && guild.config.verification.log) {
+                verification(message, client);
+            }
+
             if (!guild?.config.duplicates?.detection || !guild.config.duplicates.search) {
                 return;
             }

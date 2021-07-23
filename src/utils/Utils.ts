@@ -1,5 +1,6 @@
-import { Guild, GuildMember, User } from "discord.js";
+import { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
 import moment from "moment";
+import BotClient from "~/BotClient";
 
 export function splitArguments(argument: string, amount: number): string[] {
     const args = [];
@@ -115,4 +116,44 @@ export function getDuration(argument: string): number | undefined {
     }
 
     return;
+}
+
+export async function verification(message: Message, client: BotClient): Promise<void> {
+    const guild = await client.database.getGuild(message.guild!.id);
+    if (!guild?.config.verification?.enabled || !guild.config.verification.channel || !guild.config.verification.log || !guild.config.verification.password) {
+        return;
+    }
+    const password = await detectPassword(message.cleanContent, client, message.guild!.id);
+    if (!password) {
+        return;
+    }
+
+    const channel = client.channels.cache.get(guild?.config.verification.log);
+    if (!channel) {
+        return;
+    }
+
+    const content = `Verification by user: ${formatUser(message.author)}:\n\n${message.content}`;
+
+    const log = await (channel as TextChannel).send(content);
+    await log.react("✅");
+    await log.react("❗");
+    await log.react("❌");
+    await log.react("🔞");
+
+    client.database.guilds.updateOne({ id: guild.id }, { "$push": { "verifications": { user: message.author.id, message: log.id } } });
+}
+
+async function detectPassword(argument: string, client: BotClient, guild: string): Promise<boolean> {
+    const guildDb = await client.database.getGuild(guild);
+    if (!guildDb?.config.verification?.password) {
+        return false;
+    }
+
+    const content = argument.normalize().toLowerCase();
+    if (content.includes(guildDb.config.verification.password)) {
+        return true;
+    }
+
+    return false;
 }

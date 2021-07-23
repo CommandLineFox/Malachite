@@ -93,28 +93,62 @@ export default class Config extends Command {
                     break;
                 }
 
-                case "verificationchannel": {
+                case "probation": {
+                    await probationRoleSettings(event, option, args, guild);
+                    break;
+                }
 
+                case "verifiedrole": {
+                    await verifiedRoleSettings(event, option, args, guild);
+                    break;
+                }
+
+                case "nsfwrole": {
+                    await nsfwRoleSettings(event, option, args, guild);
+                    break;
+                }
+                case "verification": {
+                    await verificationSettings(event, option, guild);
+                    break;
+                }
+
+                case "verificationchannel": {
+                    await verificationChannelSettings(event, option, args, guild);
                     break;
                 }
 
                 case "verificationlog": {
-
+                    await verificationLogSettings(event, option, args, guild);
                     break;
                 }
 
                 case "welcomechannel": {
-
+                    await welcomeChannelSettings(event, option, args, guild);
                     break;
                 }
 
                 case "welcomemessage": {
-
+                    await welcomeMessageSettings(event, option, args, guild);
                     break;
                 }
 
                 case "welcomenotification": {
+                    await welcomeNotificationSettings(event, option, guild);
+                    break;
+                }
 
+                case "password": {
+                    await passwordSettings(event, option, args, guild);
+                    break;
+                }
+
+                case "autoremovensfw": {
+                    await autoRemoveNsfwSettings(event, option, guild);
+                    break;
+                }
+
+                case "autoaddunverified": {
+                    await autoAddUnverifiedSettings(event, option, guild);
                     break;
                 }
             }
@@ -538,6 +572,442 @@ async function unverifiedRoleSettings(event: CommandEvent, option: string, args:
     }
 }
 
+
+async function probationRoleSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "probation", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const member = args;
+
+            if (!member) {
+                event.send("You need to specify a role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.find(role => role.id === member || role.name === member || `<@&${role.id}>` === member);
+
+            if (!role) {
+                event.send("Couldn't find the role you're looking for.");
+                return;
+            }
+
+            if (guild.config.roles?.member === role.id) {
+                event.send("The specified role is already set as the probation role.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.probation": role.id } });
+            await event.send(`Set \`${role.name}\` as the probation role.`);
+            break;
+        }
+
+        case "remove": {
+            if (!guild.config.roles?.probation) {
+                event.send("No role is specified as the probation role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.get(guild.config.roles.probation);
+            if (!role) {
+                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.probation": "" } });
+                await event.send("The role that used to be the probation role was deleted or can't be found.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.probation": "" } });
+            await event.send(`\`${role.name}\` is no longer the probation role.`);
+            break;
+        }
+    }
+}
+
+
+async function verifiedRoleSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "verified", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const member = args;
+
+            if (!member) {
+                event.send("You need to specify a role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.find(role => role.id === member || role.name === member || `<@&${role.id}>` === member);
+
+            if (!role) {
+                event.send("Couldn't find the role you're looking for.");
+                return;
+            }
+
+            if (guild.config.roles?.member === role.id) {
+                event.send("The specified role is already set as the unverified role.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.unverified": role.id } });
+            await event.send(`Set \`${role.name}\` as the unverified role.`);
+            break;
+        }
+
+        case "remove": {
+            if (!guild.config.roles?.unverified) {
+                event.send("No role is specified as the unverified role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.get(guild.config.roles.unverified);
+            if (!role) {
+                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
+                await event.send("The role that used to be the unverified role was deleted or can't be found.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
+            await event.send(`\`${role.name}\` is no longer the unverified role.`);
+            break;
+        }
+    }
+}
+
+
+async function nsfwRoleSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "nsfw", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const member = args;
+
+            if (!member) {
+                event.send("You need to specify a role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.find(role => role.id === member || role.name === member || `<@&${role.id}>` === member);
+
+            if (!role) {
+                event.send("Couldn't find the role you're looking for.");
+                return;
+            }
+
+            if (guild.config.roles?.member === role.id) {
+                event.send("The specified role is already set as the unverified role.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.unverified": role.id } });
+            await event.send(`Set \`${role.name}\` as the unverified role.`);
+            break;
+        }
+
+        case "remove": {
+            if (!guild.config.roles?.unverified) {
+                event.send("No role is specified as the unverified role.");
+                return;
+            }
+
+            const role = event.guild.roles.cache.get(guild.config.roles.unverified);
+            if (!role) {
+                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
+                await event.send("The role that used to be the unverified role was deleted or can't be found.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
+            await event.send(`\`${role.name}\` is no longer the unverified role.`);
+            break;
+        }
+    }
+}
+
+async function verificationSettings(event: CommandEvent, option: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "verification", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "enable": {
+            if (guild.config.verification?.enabled === true) {
+                event.send("Verification is already enabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$set": { "config.verification.enabled": true } });
+            await event.send("Successfully enabled verificaiton.");
+            break;
+        }
+
+        case "disable": {
+            if (guild.config.leaveLog?.notification !== true) {
+                event.send("Verification is already disabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.enabled": "" } });
+            await event.send("Successfully disabled verification.");
+            break;
+        }
+    }
+}
+
+async function verificationChannelSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+
+    if (!option) {
+        await displayData(event, guild, "verificationchannel", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const channel = event.guild.channels.cache.find(channel => channel.name === args || channel.id === args || `<#${channel.id}>` === args);
+            if (!channel) {
+                event.send("Couldn't find the channel you're looking for.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.verification.channel": channel.id } });
+            await event.send(`The channel to look for verifications in has been set to \`${channel.name}\`.`);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.channel": "" } });
+            await event.send("The channel to look for verifications in has been removed.");
+            break;
+        }
+    }
+}
+
+async function verificationLogSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+
+    if (!option) {
+        await displayData(event, guild, "verificationlog", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const channel = event.guild.channels.cache.find(channel => channel.name === args || channel.id === args || `<#${channel.id}>` === args);
+            if (!channel) {
+                event.send("Couldn't find the channel you're looking for.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.verification.log": channel.id } });
+            await event.send(`The channel to log verifications in has been set to \`${channel.name}\`.`);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.log": "" } });
+            await event.send("The channel to verifications in has been removed.");
+            break;
+        }
+    }
+}
+
+async function welcomeChannelSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+
+    if (!option) {
+        await displayData(event, guild, "welcomechannel", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            const channel = event.guild.channels.cache.find(channel => channel.name === args || channel.id === args || `<#${channel.id}>` === args);
+            if (!channel) {
+                event.send("Couldn't find the channel you're looking for.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.welcome.channel": channel.id } });
+            await event.send(`The channel to welcome users in has been set to \`${channel.name}\`.`);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.welcome.channel": "" } });
+            await event.send("The channel to welcome users in has been removed.");
+            break;
+        }
+    }
+}
+
+async function welcomeMessageSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+
+    if (!option) {
+        await displayData(event, guild, "welcomemessage", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            await database.guilds.updateOne({ id: guild?.id }, { "$set": { "config.welcome.message": args } });
+            await event.send(`The welcome message has been set to \`${args}\``);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild?.id }, { "$unset": { "config.welcome.message": "" } });
+            await event.send("The welcome message has been removed");
+            break;
+        }
+    }
+}
+
+async function welcomeNotificationSettings(event: CommandEvent, option: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "welcomenotification", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "enable": {
+            if (guild.config.leaveLog?.notification === true) {
+                event.send("Welcome notifications are already enabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$set": { "config.welcome.notification": true } });
+            await event.send("Successfully enabled welcome notifications.");
+            break;
+        }
+
+        case "disable": {
+            if (guild.config.leaveLog?.notification !== true) {
+                event.send("Welcome notifications are already disabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.welcome.notification": "" } });
+            await event.send("Successfully disabled welcome notificatons.");
+            break;
+        }
+    }
+}
+
+async function passwordSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const client = event.client;
+    const database = client.database;
+
+    if (!option) {
+        await displayData(event, guild, "password", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "set": {
+            await database.guilds.updateOne({ id: guild?.id }, { "$set": { "config.verification.password": args.toLowerCase() } });
+            await event.send(`The password has been set to \`${args.toLowerCase()}\``);
+            break;
+        }
+
+        case "remove": {
+            await database.guilds.updateOne({ id: guild?.id }, { "$unset": { "config.verification.password": "" } });
+            await event.send("The password has been removed");
+            break;
+        }
+    }
+}
+
+
+async function autoRemoveNsfwSettings(event: CommandEvent, option: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "autoremovensfw", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "enable": {
+            if (guild.config.autoRemoveNsfw === true) {
+                event.send("Already enabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$set": { "config.autoRemoveNsfw": true } });
+            await event.send("Automatically removing NSFW role from users on probation.");
+            break;
+        }
+
+        case "disable": {
+            if (guild.config.autoRemoveNsfw !== true) {
+                event.send("Already disabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.leaveLog.autoRemoveNsfw": "" } });
+            await event.send("No longer automatically removing NSFW role from users on probation.");
+            break;
+        }
+    }
+}
+
+async function autoAddUnverifiedSettings(event: CommandEvent, option: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "autoaddunverified", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "enable": {
+            if (guild.config.autoAddUnverified === true) {
+                event.send("Already enabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$set": { "config.autoAddUnverified": true } });
+            await event.send("Automatically adding unverified role to users who join.");
+            break;
+        }
+
+        case "disable": {
+            if (guild.config.autoAddUnverified !== true) {
+                event.send("Already disabled.");
+                return;
+            }
+
+            database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.leaveLog.autoAddUnverified": "" } });
+            await event.send("No longer automatically adding unverified role.");
+            break;
+        }
+    }
+}
+
 async function displayAllSettings(event: CommandEvent, guild: Guild) {
     const embed = new MessageEmbed()
         .setTitle("The current settings for this server:")
@@ -548,11 +1018,23 @@ async function displayAllSettings(event: CommandEvent, guild: Guild) {
         .addField("Deletion log", await displayData(event, guild, "deletion"), true)
         .addField("Time", await displayData(event, guild, "time"), true)
         .addField("Member role", await displayData(event, guild, "member"), true)
+        .addField("Unverified role", await displayData(event, guild, "unverified"), true)
+        .addField("Probation role", await displayData(event, guild, "probation"), true)
+        .addField("Verified role", await displayData(event, guild, "verified"), true)
+        .addField("Nsfw role", await displayData(event, guild, "nsfw"), true)
         .addField("Leave notifications", await displayData(event, guild, "leavenotification"), true)
         .addField("Leave channel", await displayData(event, guild, "leavechannel"), true)
         .addField("Leave message", await displayData(event, guild, "leavemessage"), true)
         .addField("Leave emote", await displayData(event, guild, "leaveemote"), true)
-        .addField("Unverified role", await displayData(event, guild, "unverified"), true)
+        .addField("Verification", await displayData(event, guild, "verification"), true)
+        .addField("Verification channel", await displayData(event, guild, "verificationchannel"), true)
+        .addField("Verification log", await displayData(event, guild, "verificationlog"), true)
+        .addField("Welcome channel", await displayData(event, guild, "welcomechannel"), true)
+        .addField("Welcome message", await displayData(event, guild, "welcomemessage"), true)
+        .addField("Welcome notification", await displayData(event, guild, "welcomenotification"), true)
+        .addField("Auto-remove NSFW", await displayData(event, guild, "autoremovensfw"), true)
+        .addField("Auto-add unverified", await displayData(event, guild, "autoaddunverified"), true)
+        .addField("Password", await displayData(event, guild, "password"), true)
         .setFooter(`Requested by ${event.author.tag}`, event.author.displayAvatarURL());
 
     event.send({ embed: embed });
@@ -683,6 +1165,122 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
 
                 return role.name;
             }
+
+            case "probationrole": {
+                if (!guild.config.roles) {
+                    return "Not set up";
+                }
+
+                const id = guild.config.roles.probation;
+                if (!id) {
+                    return "No probation role";
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.probation": "" } });
+                    return "No probation role";
+                }
+
+                return role.name;
+            }
+
+            case "verifiedrole": {
+                if (!guild.config.roles) {
+                    return "Not set up";
+                }
+
+                const id = guild.config.roles.verified;
+                if (!id) {
+                    return "No verified role";
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.verified": "" } });
+                    return "No verified role";
+                }
+
+                return role.name;
+            }
+
+            case "nsfw": {
+                if (!guild.config.roles) {
+                    return "Not set up";
+                }
+
+                const id = guild.config.roles.nsfw;
+                if (!id) {
+                    return "No nsfw role";
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.nsfw": "" } });
+                    return "No nsfw role";
+                }
+
+                return role.name;
+            }
+
+            case "verification": {
+                return guild.config.verification?.enabled === true ? "Enabled" : "Disabled";
+            }
+
+            case "verificationchannel": {
+                if (!guild.config.verification?.channel) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.channel": "" } });
+                    return "None";
+                }
+
+                return `${event.guild.channels.cache.get(guild.config.verification.channel)}`;
+            }
+
+            case "verificationlog": {
+                if (!guild.config.verification?.log) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.log": "" } });
+                    return "None";
+                }
+
+                return `${event.guild.channels.cache.get(guild.config.verification.log)}`;
+            }
+
+            case "welcomechannel": {
+                if (!guild.config.welcome?.channel) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.welcome.channel": "" } });
+                    return "None";
+                }
+
+                return `${event.guild.channels.cache.get(guild.config.welcome.channel)}`;
+            }
+
+            case "welcomemessage": {
+                if (!guild.config.welcome?.message) {
+                    return "None";
+                }
+
+                return guild.config.welcome.message;
+            }
+
+            case "welcomenotification": {
+                return guild.config.welcome?.notification === true ? "Enabled" : "Disabled";
+            }
+
+            case "password": {
+                if (!guild.config.verification?.password) {
+                    return "None";
+                }
+
+                return guild.config.verification.password;
+            }
+
+            case "autoremovensfw": {
+                return guild.config.autoRemoveNsfw === true ? "Enabled" : "Disabled";
+            }
+
+            case "autoaddunverified": {
+                return guild.config.autoAddUnverified === true ? "Enabled" : "Disabled";
+            }
         }
     } else {
         switch (type.toLowerCase()) {
@@ -798,6 +1396,93 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 }
 
                 await event.send(`\`${role.name}\` is set as the unverified role.`);
+                break;
+            }
+
+            case "probation": {
+                const id = guild.config.roles?.probation;
+                if (!id) {
+                    event.send("There is no role set as the probation role.");
+                    return;
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.probation": "" } });
+                    await event.send("The role that used to be the probation role was deleted or can't be found.");
+                    return;
+                }
+
+                await event.send(`\`${role.name}\` is set as the probation role.`);
+                break;
+            }
+
+            case "verified": {
+                const id = guild.config.roles?.verified;
+                if (!id) {
+                    event.send("There is no role set as the verified role.");
+                    return;
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.verified": "" } });
+                    await event.send("The role that used to be the verified role was deleted or can't be found.");
+                    return;
+                }
+
+                await event.send(`\`${role.name}\` is set as the verified role.`);
+                break;
+            }
+
+            case "nsfw": {
+                const id = guild.config.roles?.nsfw;
+                if (!id) {
+                    event.send("There is no role set as the nsfw role.");
+                    return;
+                }
+
+                const role = event.guild.roles.cache.get(id);
+                if (!role) {
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.nsfw": "" } });
+                    await event.send("The role that used to be the nsfw role was deleted or can't be found.");
+                    return;
+                }
+
+                await event.send(`\`${role.name}\` is set as the nsfw role.`);
+                break;
+            }
+
+            case "verificationchannel": {
+                if (!guild.config.verification?.channel) {
+                    event.send("There's no channel to look for verifications in.");
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.duplicates.log": "" } });
+                    return;
+                }
+
+                await event.send(`The channel to look for verifications in <#${event.guild.channels.cache.get(guild.config.verification.channel)}>`);
+                break;
+            }
+
+            case "verificationlog": {
+                if (!guild.config.verification?.log) {
+                    event.send("There's no channel to log verifications in.");
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.log": "" } });
+                    return;
+                }
+
+                await event.send(`The channel to log verifications in <#${event.guild.channels.cache.get(guild.config.verification.log)}>`);
+                break;
+            }
+
+            case "welcomechannel": {
+                if (!guild.config.welcome?.channel) {
+                    event.send("There's no channel to welcome users in.");
+                    await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.welcome.log": "" } });
+                    return;
+                }
+
+                await event.send(`The channel to welcome users in is <#${event.guild.channels.cache.get(guild.config.welcome.channel)}>`);
                 break;
             }
         }
