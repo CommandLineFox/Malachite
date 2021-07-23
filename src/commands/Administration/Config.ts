@@ -894,7 +894,7 @@ async function welcomeNotificationSettings(event: CommandEvent, option: string, 
 
     switch (option.toLowerCase()) {
         case "enable": {
-            if (guild.config.leaveLog?.notification === true) {
+            if (guild.config.welcome?.notification === true) {
                 event.send("Welcome notifications are already enabled.");
                 return;
             }
@@ -905,7 +905,7 @@ async function welcomeNotificationSettings(event: CommandEvent, option: string, 
         }
 
         case "disable": {
-            if (guild.config.leaveLog?.notification !== true) {
+            if (guild.config.welcome?.notification !== true) {
                 event.send("Welcome notifications are already disabled.");
                 return;
             }
