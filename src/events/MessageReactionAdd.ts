@@ -10,9 +10,13 @@ export default class MessageReactionAdd extends Event {
 
     public async callback(client: MyntClient, messageReaction: MessageReaction, user: User): Promise<void> {
         try {
+            if (messageReaction.partial) {
+                messageReaction = await messageReaction.fetch();
+            }
+
             const message = messageReaction.message;
             const server = message.guild;
-            if (!server || user.id === client.user?.id) {
+            if (!server || user.bot) {
                 return;
             }
 
@@ -83,8 +87,9 @@ export default class MessageReactionAdd extends Event {
                     const member = server.members.cache.get(verification.user);
                     if (member) {
                         if (member.kickable) {
+                            const format = formatUser(member.user);
                             member.kick("Verification");
-                            message.edit(`❌ ${formatUser(member.user)} has been kicked by ${user.tag}`);
+                            message.edit(`❌ ${format} has been kicked by ${user.tag}`);
                             message.reactions.removeAll();
                             client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                         } else {
@@ -101,8 +106,9 @@ export default class MessageReactionAdd extends Event {
                     const member = server.members.cache.get(verification.user);
                     if (member) {
                         if (member.bannable) {
+                            const format = formatUser(member.user);
                             member.ban({ reason: "Verification" });
-                            message.edit(`🔞 ${formatUser(member.user)} has been banned by ${user.tag}`);
+                            message.edit(`🔞 ${format} has been banned by ${user.tag}`);
                             message.reactions.removeAll();
                             client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                         } else {
@@ -111,8 +117,8 @@ export default class MessageReactionAdd extends Event {
                                     setTimeout(async () => msg.delete(), 10000);
                                 });
                         }
-                        break;
                     }
+                    break;
                 }
             }
         } catch (error) {

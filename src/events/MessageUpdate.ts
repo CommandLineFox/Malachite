@@ -10,7 +10,7 @@ export default class MessageUpdate extends Event {
 
     public async callback(client: BotClient, oldMessage: Message, newMessage: Message): Promise<void> {
         try {
-            if (newMessage.author.bot) {
+            if (newMessage.partial || newMessage.author.bot) {
                 return;
             }
 

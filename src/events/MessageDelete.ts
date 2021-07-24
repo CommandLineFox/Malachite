@@ -10,11 +10,7 @@ export default class MessageDelete extends Event {
 
     public async callback(client: BotClient, message: Message): Promise<void> {
         try {
-            if (message.author.bot) {
-                return;
-            }
-
-            if (message.content.length === 0) {
+            if (message.partial || message.author.bot || message.content.length === 0) {
                 return;
             }
 

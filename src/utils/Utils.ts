@@ -141,7 +141,8 @@ export async function verification(message: Message, client: BotClient): Promise
     await log.react("❌");
     await log.react("🔞");
 
-    client.database.guilds.updateOne({ id: guild.id }, { "$push": { "verifications": { user: message.author.id, message: log.id } } });
+    await client.database.guilds.updateOne({ id: guild.id }, { "$push": { "verifications": { user: message.author.id, message: log.id } } });
+    await message.reply("your request is being checked by staff.");
 }
 
 async function detectPassword(argument: string, client: BotClient, guild: string): Promise<boolean> {

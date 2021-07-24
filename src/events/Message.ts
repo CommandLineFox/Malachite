@@ -11,11 +11,7 @@ export default class MessageEvent extends Event {
 
     public async callback(client: BotClient, message: Message): Promise<void> {
         try {
-            if (message.author.bot) {
-                return;
-            }
-
-            if (!message.guild) {
+            if (message.partial || message.author.bot || !message.guild) {
                 return;
             }
 

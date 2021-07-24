@@ -583,21 +583,21 @@ async function probationRoleSettings(event: CommandEvent, option: string, args: 
 
     switch (option.toLowerCase()) {
         case "set": {
-            const member = args;
+            const probation = args;
 
-            if (!member) {
+            if (!probation) {
                 event.send("You need to specify a role.");
                 return;
             }
 
-            const role = event.guild.roles.cache.find(role => role.id === member || role.name === member || `<@&${role.id}>` === member);
+            const role = event.guild.roles.cache.find(role => role.id === probation || role.name === probation || `<@&${role.id}>` === probation);
 
             if (!role) {
                 event.send("Couldn't find the role you're looking for.");
                 return;
             }
 
-            if (guild.config.roles?.member === role.id) {
+            if (guild.config.roles?.probation === role.id) {
                 event.send("The specified role is already set as the probation role.");
                 return;
             }
@@ -638,45 +638,45 @@ async function verifiedRoleSettings(event: CommandEvent, option: string, args: s
 
     switch (option.toLowerCase()) {
         case "set": {
-            const member = args;
+            const verified = args;
 
-            if (!member) {
+            if (!verified) {
                 event.send("You need to specify a role.");
                 return;
             }
 
-            const role = event.guild.roles.cache.find(role => role.id === member || role.name === member || `<@&${role.id}>` === member);
+            const role = event.guild.roles.cache.find(role => role.id === verified || role.name === verified || `<@&${role.id}>` === verified);
 
             if (!role) {
                 event.send("Couldn't find the role you're looking for.");
                 return;
             }
 
-            if (guild.config.roles?.member === role.id) {
-                event.send("The specified role is already set as the unverified role.");
+            if (guild.config.roles?.verified === role.id) {
+                event.send("The specified role is already set as the verified role.");
                 return;
             }
 
-            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.unverified": role.id } });
-            await event.send(`Set \`${role.name}\` as the unverified role.`);
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.verified": role.id } });
+            await event.send(`Set \`${role.name}\` as the verified role.`);
             break;
         }
 
         case "remove": {
-            if (!guild.config.roles?.unverified) {
-                event.send("No role is specified as the unverified role.");
+            if (!guild.config.roles?.verified) {
+                event.send("No role is specified as the verified role.");
                 return;
             }
 
-            const role = event.guild.roles.cache.get(guild.config.roles.unverified);
+            const role = event.guild.roles.cache.get(guild.config.roles.verified);
             if (!role) {
-                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
-                await event.send("The role that used to be the unverified role was deleted or can't be found.");
+                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.verified": "" } });
+                await event.send("The role that used to be the verified role was deleted or can't be found.");
                 return;
             }
 
-            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
-            await event.send(`\`${role.name}\` is no longer the unverified role.`);
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.verified": "" } });
+            await event.send(`\`${role.name}\` is no longer the verified role.`);
             break;
         }
     }
@@ -693,45 +693,45 @@ async function nsfwRoleSettings(event: CommandEvent, option: string, args: strin
 
     switch (option.toLowerCase()) {
         case "set": {
-            const member = args;
+            const nsfw = args;
 
-            if (!member) {
+            if (!nsfw) {
                 event.send("You need to specify a role.");
                 return;
             }
 
-            const role = event.guild.roles.cache.find(role => role.id === member || role.name === member || `<@&${role.id}>` === member);
+            const role = event.guild.roles.cache.find(role => role.id === nsfw || role.name === nsfw || `<@&${role.id}>` === nsfw);
 
             if (!role) {
                 event.send("Couldn't find the role you're looking for.");
                 return;
             }
 
-            if (guild.config.roles?.member === role.id) {
-                event.send("The specified role is already set as the unverified role.");
+            if (guild.config.roles?.nsfw === role.id) {
+                event.send("The specified role is already set as the nsfw role.");
                 return;
             }
 
-            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.unverified": role.id } });
-            await event.send(`Set \`${role.name}\` as the unverified role.`);
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.nsfw": role.id } });
+            await event.send(`Set \`${role.name}\` as the nsfw role.`);
             break;
         }
 
         case "remove": {
-            if (!guild.config.roles?.unverified) {
-                event.send("No role is specified as the unverified role.");
+            if (!guild.config.roles?.nsfw) {
+                event.send("No role is specified as the nsfw role.");
                 return;
             }
 
-            const role = event.guild.roles.cache.get(guild.config.roles.unverified);
+            const role = event.guild.roles.cache.get(guild.config.roles.nsfw);
             if (!role) {
-                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
-                await event.send("The role that used to be the unverified role was deleted or can't be found.");
+                await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.nsfw": "" } });
+                await event.send("The role that used to be the nsfw role was deleted or can't be found.");
                 return;
             }
 
-            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.unverified": "" } });
-            await event.send(`\`${role.name}\` is no longer the unverified role.`);
+            await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.nsfw": "" } });
+            await event.send(`\`${role.name}\` is no longer the nsfw role.`);
             break;
         }
     }
@@ -1166,7 +1166,7 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 return role.name;
             }
 
-            case "probationrole": {
+            case "probation": {
                 if (!guild.config.roles) {
                     return "Not set up";
                 }
@@ -1185,7 +1185,7 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 return role.name;
             }
 
-            case "verifiedrole": {
+            case "verified": {
                 if (!guild.config.roles) {
                     return "Not set up";
                 }
