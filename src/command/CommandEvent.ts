@@ -1,4 +1,4 @@
-import { Message, StringResolvable, MessageOptions, TextChannel, DMChannel, User, Guild, GuildMember, NewsChannel, MessageEmbed } from "discord.js";
+import { Message, MessageOptions, TextChannel, User, Guild, GuildMember, MessageEmbed, TextBasedChannels } from "discord.js";
 import BotClient from "~/BotClient";
 
 export default class CommandEvent {
@@ -6,7 +6,7 @@ export default class CommandEvent {
     public readonly client: BotClient;
     public readonly author: User;
     public readonly argument: string;
-    public readonly channel: TextChannel | DMChannel | NewsChannel;
+    public readonly channel: TextBasedChannels;
     public readonly isFromGuild: boolean;
     public readonly textChannel: TextChannel | undefined;
     public readonly guild: Guild;
@@ -18,17 +18,39 @@ export default class CommandEvent {
         this.author = message.author;
         this.argument = argument;
         this.channel = message.channel;
-        this.isFromGuild = this.channel.type === "text";
+        this.isFromGuild = this.channel.type !== "DM";
         this.textChannel = this.channel instanceof TextChannel ? this.channel : undefined;
         this.guild = message.guild!;
         this.member = message.member!;
     }
 
-    public async send(content: StringResolvable, options?: MessageOptions | MessageEmbed): Promise<Message | Message[]> {
-        return options ? this.channel.send(content, options) : this.channel.send(content);
+    public async send(content: string | MessageEmbed, options?: MessageOptions, autoDelete?: boolean): Promise<Message> {
+        const isEmbed = typeof content === "object";
+        const opts = {
+            ...options,
+            embeds: isEmbed ? [content as MessageEmbed] : undefined,
+            content: isEmbed ? undefined : content as string
+        };
+
+        const message = await this.channel.send(opts);
+        if (autoDelete) {
+            setTimeout(async () => void await message.delete(), 10000);
+        }
+        return message;
     }
 
-    public async reply(content: StringResolvable, options?: MessageOptions): Promise<Message | Message[]> {
-        return options ? this.message.reply(content, options) : this.message.reply(content);
+    public async reply(content: string | MessageEmbed, options?: MessageOptions, autoDelete?: boolean): Promise<Message> {
+        const isEmbed = typeof content === "object";
+        const opts = {
+            ...options,
+            embeds: isEmbed ? [content as MessageEmbed] : undefined,
+            content: isEmbed ? undefined : content as string
+        };
+
+        const message = await this.message.reply(opts);
+        if (autoDelete) {
+            setTimeout(async () => void await message.delete(), 10000);
+        }
+        return message;
     }
 }

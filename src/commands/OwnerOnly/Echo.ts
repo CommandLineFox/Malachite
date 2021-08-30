@@ -15,10 +15,12 @@ export default class Echo extends Command {
     public async run(event: CommandEvent): Promise<void> {
         const client = event.client;
         try {
-            await event.message.delete({ timeout: 100 });
+            setTimeout(async () => {
+                await event.message.delete();
+            }, 100);
             await event.send(event.argument);
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }

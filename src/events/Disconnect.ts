@@ -8,7 +8,7 @@ export default class Disconnect extends Event {
 
     public callback(client: BotClient): void {
         if (client.interval) {
-            client.clearInterval(client.interval);
+            client.interval.unref();
         }
     }
 }

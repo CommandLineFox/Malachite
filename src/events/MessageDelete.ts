@@ -22,7 +22,7 @@ export default class MessageDelete extends Event {
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
 
-            if (!guildDb?.config.duplicates?.detection || !guildDb.config.duplicates.search || message.channel.id !== guildDb.config.duplicates.search || !guildDb.config.duplicates.log) {
+            if (!guildDb?.config.duplicates?.detection || !guildDb.config.duplicates.search || !guildDb.config.duplicates.search.includes(message.channel.id) || !guildDb.config.duplicates.log) {
                 return;
             }
 
@@ -53,14 +53,14 @@ export default class MessageDelete extends Event {
                 const content = formatMessageDelete(message, true);
                 const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted from ${channel} that was sent **${creation} ago**:\n**Content:**`;
                 const attachment = { attachment: Buffer.from(content, "utf8"), name: "DeleteLog.txt" };
-                log.send(line, { files: [attachment] });
+                log.send({ content: line, files: [attachment] });
             } else {
                 const content = formatMessageDelete(message);
                 const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted from ${channel} that was sent **${creation} ago**: ${content}`;
                 log.send(line);
             }
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }

@@ -153,7 +153,7 @@ export default class Config extends Command {
                 }
             }
         } catch (error) {
-            console.log(error);
+            client.emit("error", (error as Error));
         }
     }
 }
@@ -1037,7 +1037,7 @@ async function displayAllSettings(event: CommandEvent, guild: Guild) {
         .addField("Password", await displayData(event, guild, "password"), true)
         .setFooter(`Requested by ${event.author.tag}`, event.author.displayAvatarURL());
 
-    event.send({ embed: embed });
+    event.send(embed);
 }
 
 async function displayData(event: CommandEvent, guild: Guild, type: DisplayData, specific?: boolean): Promise<any> {
@@ -1311,7 +1311,7 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 }
 
                 embed.setDescription(list);
-                event.send({ embed: embed });
+                event.send(embed);
                 break;
             }
 

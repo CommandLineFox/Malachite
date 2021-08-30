@@ -38,7 +38,7 @@ export default class Eval extends Command {
                     .addField("Output", makeCodeBlock(exec, "js"))
                     .setFooter(`Script executed in ${end - start}ms`);
 
-                event.send({ embed: embed });
+                event.send(embed);
             } else {
                 const embed = new MessageEmbed()
                     .addField("Input", makeCodeBlock(script, "js"))
@@ -47,7 +47,7 @@ export default class Eval extends Command {
                 event.send(embed);
             }
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }
@@ -62,7 +62,7 @@ async function run(script: string, ctx: object, opts: object): Promise<string | 
 
         return result;
     } catch (error) {
-        return error;
+        return (error as Error);
     }
 }
 

@@ -12,7 +12,6 @@ export default class GuildMemberAdd extends Event {
             const guild = member.guild;
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
-            console.log(guildDb?.config.roles?.unverified, guildDb?.config.autoAddUnverified);
             if (guildDb?.config.roles?.unverified && guildDb.config.autoAddUnverified) {
                 const role = guild.roles.cache.get(guildDb.config.roles.unverified);
                 if (role) {
@@ -21,7 +20,7 @@ export default class GuildMemberAdd extends Event {
             }
 
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }

@@ -23,10 +23,10 @@ export default class Ping extends Command {
                     const ping = new MessageEmbed()
                         .addField(":hourglass: Response time: ", `${msg.createdTimestamp - event.message.createdTimestamp}ms`, false)
                         .addField(":heartbeat: Bot ping: ", `${Math.round(event.client.ws.ping)}ms`, true);
-                    await msg.edit({ content: "", embed: ping });
+                    await msg.edit({ content: null, embeds: [ping] });
                 });
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }

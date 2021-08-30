@@ -30,6 +30,7 @@ export default class MessageReactionAdd extends Event {
                 return;
             }
 
+            // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
             switch (messageReaction.emoji.name) {
                 case "✅": {
                     if (guild.config.roles?.unverified) {
@@ -37,7 +38,7 @@ export default class MessageReactionAdd extends Event {
                         if (unverified) {
                             const member = server.members.cache.get(verification.user);
                             if (member) {
-                                member.roles.remove(unverified);
+                                await member.roles.remove(unverified);
                             }
                         }
                     }
@@ -47,10 +48,10 @@ export default class MessageReactionAdd extends Event {
                         if (memberRole) {
                             const member = server.members.cache.get(verification.user);
                             if (member) {
-                                member.roles.add(memberRole);
-                                message.edit(`✅ ${formatUser(member.user)} has been verified by ${user.tag}`);
-                                message.reactions.removeAll();
-                                client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
+                                await member.roles.add(memberRole);
+                                await message.edit(`✅ ${formatUser(member.user)} has been verified by ${user.tag}`);
+                                await message.reactions.removeAll();
+                                await client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                             }
                         }
                     } else {
@@ -122,7 +123,7 @@ export default class MessageReactionAdd extends Event {
                 }
             }
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }

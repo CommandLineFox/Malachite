@@ -133,7 +133,7 @@ export async function verification(message: Message, client: BotClient): Promise
         return;
     }
 
-    const content = `Verification by user: ${formatUser(message.author)}:\n\n${message.content}`;
+    const content = `Verification by user: ${formatUser(message.author)}:\n\n${message.cleanContent}`;
 
     const log = await (channel as TextChannel).send(content);
     await log.react("✅");
@@ -142,7 +142,28 @@ export async function verification(message: Message, client: BotClient): Promise
     await log.react("🔞");
 
     await client.database.guilds.updateOne({ id: guild.id }, { "$push": { "verifications": { user: message.author.id, message: log.id } } });
-    await message.reply("your request is being checked by staff.");
+    await message.reply("Your request is being checked by staff.");
+}
+
+export async function editVerification(message: Message, client: BotClient): Promise<void> {
+    const guild = await client.database.getGuild(message.guild!.id);
+    if (!guild?.config.verification?.enabled || !guild.config.verification.channel || !guild.config.verification.log || !guild.config.verification.password) {
+        return;
+    }
+
+    const channel = client.channels.cache.get(guild?.config.verification.log);
+    if (!channel) {
+        return;
+    }
+
+    const verification = guild.verifications.find(verification => verification.user === message.author.id);
+    if (!verification) {
+        return;
+    }
+
+    const log = await (channel as TextChannel).messages.fetch(verification.message);
+    const content = `Verification by user: ${formatUser(message.author)}:\n\n${message.cleanContent}`;
+    await log.edit(content);
 }
 
 async function detectPassword(argument: string, client: BotClient, guild: string): Promise<boolean> {
@@ -151,7 +172,13 @@ async function detectPassword(argument: string, client: BotClient, guild: string
         return false;
     }
 
-    const content = argument.normalize().toLowerCase();
+    let content = "";
+    for (const character of argument) {
+        if ((character.toLowerCase() >= "a" && character.toLowerCase() <= "z" || character.match(/\s/))) {
+            content += character.toLowerCase();
+        }
+    }
+
     if (content.includes(guildDb.config.verification.password)) {
         return true;
     }

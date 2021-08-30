@@ -11,7 +11,7 @@ export default class Ready extends Event {
 
         const database = client.database;
         client.interval = setInterval(async () => {
-            const guilds = client.guilds.cache.array();
+            const guilds = client.guilds.cache.toJSON();
             for (const server of guilds) {
                 const guild = await database.getGuild(server.id);
                 if (!guild?.config.duplicates?.time) {

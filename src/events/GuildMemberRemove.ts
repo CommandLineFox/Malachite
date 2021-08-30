@@ -41,7 +41,7 @@ export default class GuildMemberRemove extends Event {
                 message.react(guildDb.config.leaveLog.emote);
             }
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }

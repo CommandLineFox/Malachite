@@ -6,7 +6,8 @@ export default {
     owners: array(base.string),
     options: object({
         disableMentions: optional(base.string),
-        partials: optionalArray(base.string)
+        partials: optionalArray(base.string),
+        intents: optionalArray(base.string)
     }),
     db: object({
         name: string(""),

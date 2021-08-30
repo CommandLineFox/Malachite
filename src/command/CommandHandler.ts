@@ -10,7 +10,7 @@ export default class CommandHandler {
     public constructor(client: BotClient) {
         this.client = client;
         this.mentions = [`<@${this.client.user!.id}>`, `<@!${this.client.user!.id}>`];
-        client.on("message", async (message) => {
+        client.on("messageCreate", async (message) => {
             if (!message.author.bot) {
                 await this.handleMessage(message);
             }
@@ -45,7 +45,7 @@ export default class CommandHandler {
         try {
             await command.execute(new CommandEvent(message, this.client, args));
         } catch (error) {
-            this.client.emit("error", error);
+            this.client.emit("error", (error as Error));
         }
     }
 

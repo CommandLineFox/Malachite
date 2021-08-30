@@ -1,7 +1,7 @@
 import Event from "@event/Event";
 import BotClient from "~/BotClient";
 import { Message } from "discord.js";
-import { verification } from "@utils/Utils";
+import { editVerification, verification } from "@utils/Utils";
 
 export default class MessageUpdate extends Event {
     public constructor() {
@@ -25,12 +25,14 @@ export default class MessageUpdate extends Event {
 
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
-            if (guildDb?.config.verification?.enabled && guildDb.config.verification.password && guildDb.config.verification.channel && oldMessage.channel.id === guildDb.config.verification.channel && guildDb.config.verification.log) {
+            if (guildDb?.verifications.find(verification => verification.user === oldMessage.author.id)) {
+                editVerification(newMessage, client);
+            } else if (guildDb?.config.verification?.enabled && guildDb.config.verification.password && guildDb.config.verification.channel && oldMessage.channel.id === guildDb.config.verification.channel && guildDb.config.verification.log) {
                 verification(newMessage, client);
             }
 
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }

@@ -8,8 +8,6 @@ export default class GuildMemberUpdate extends Event {
         super({ name: "guildMemberUpdate" });
     }
 
-
-
     public async callback(client: MyntClient, oldMember: GuildMember, newMember: GuildMember): Promise<void> {
         try {
             const guild = await client.database.getGuild(oldMember.guild.id);
@@ -21,7 +19,7 @@ export default class GuildMemberUpdate extends Event {
                 nsfwRemove(guild, oldMember, newMember);
             }
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }
@@ -32,12 +30,20 @@ function welcome(client: MyntClient, guild: Guild, oldMember: GuildMember, newMe
         return;
     }
 
-    const role = oldMember.guild.roles.cache.get(guild.config.roles!.member!);
-    if (!role) {
+    const member = oldMember.guild.roles.cache.get(guild.config.roles!.member!);
+    if (!member) {
         return;
     }
 
-    if (newMember.roles.cache.has(role.id) && !oldMember.roles.cache.has(role.id)) {
+    let condition = newMember.roles.cache.has(member.id) && !oldMember.roles.cache.has(member.id);
+    if (guild.config.roles?.unverified) {
+        const unverified = newMember.guild.roles.cache.get(guild.config.roles.unverified);
+        if (unverified) {
+            condition = newMember.roles.cache.has(member.id) && !oldMember.roles.cache.has(member.id) && !oldMember.roles.cache.has(guild.config.roles.unverified);
+        }
+    }
+
+    if (condition) {
         const line = guild.config.welcome!.message!.replace("{member}", `<@${newMember.user.id}>`).replace("{server}", newMember.guild.name);
         (channel as TextChannel).send(line);
     }

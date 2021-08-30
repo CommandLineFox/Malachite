@@ -4,9 +4,9 @@ import BotClient from "~/BotClient";
 import moment from "moment";
 import { verification } from "@utils/Utils";
 
-export default class MessageEvent extends Event {
+export default class MessageCreate extends Event {
     public constructor() {
-        super({ name: "message" });
+        super({ name: "messageCreate" });
     }
 
     public async callback(client: BotClient, message: Message): Promise<void> {
@@ -38,7 +38,7 @@ export default class MessageEvent extends Event {
                 return;
             }
 
-            const fetch = (await (channel as TextChannel).messages.fetch({ limit: 100 })).array();
+            const fetch = (await (channel as TextChannel).messages.fetch({ limit: 100 })).toJSON();
             const messages = fetch.filter(msg => msg.createdTimestamp > Date.now() - delay && msg.channel === message.channel && msg.author === message.author && msg.content === message.content && msg != message)
                 .sort((a, b) => a.createdTimestamp - b.createdTimestamp);
 
@@ -71,7 +71,7 @@ export default class MessageEvent extends Event {
                 return;
             }
         } catch (error) {
-            client.emit("error", error);
+            client.emit("error", (error as Error));
         }
     }
 }
