@@ -35,6 +35,7 @@ export default class GuildMemberRemove extends Event {
                 if (verifyLog) {
                     const message = await (verifyLog as TextChannel).messages.fetch(verification.message);
                     await message.reactions.removeAll();
+                    await database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                 }
             }
 
