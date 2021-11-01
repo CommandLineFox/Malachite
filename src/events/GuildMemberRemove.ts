@@ -29,6 +29,15 @@ export default class GuildMemberRemove extends Event {
                 return;
             }
 
+            const verification = guildDb.verifications.find((verification) => verification.user === member.id);
+            if (verification && guildDb.config.verification?.log) {
+                const verifyLog = client.channels.cache.get(guildDb.config.verification.log);
+                if (verifyLog) {
+                    const message = await (verifyLog as TextChannel).messages.fetch(verification.message);
+                    await message.reactions.removeAll();
+                }
+            }
+
             const channel = guild.channels.cache.get(guildDb.config.leaveLog?.channel) as TextChannel;
             if (!channel) {
                 await database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.channels.leaveChannel": "" } });

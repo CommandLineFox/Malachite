@@ -1,7 +1,6 @@
 import Event from "@event/Event";
 import { Message, TextChannel } from "discord.js";
 import BotClient from "~/BotClient";
-import moment from "moment";
 import { verification } from "@utils/Utils";
 
 export default class MessageCreate extends Event {
@@ -45,9 +44,9 @@ export default class MessageCreate extends Event {
             if (messages.length > 0) {
                 message.delete();
 
-                const time = messages[messages.length - 1].createdTimestamp;
-                const difference = moment(time! + delay).fromNow(true);
-                message.channel.send(`<@${message.author.id}> please wait ${difference} before reposting.`)
+                const time = Math.round(messages[messages.length - 1].createdTimestamp / 1000);
+                const difference = `<t:${time! + delay / 1000}:R>`;
+                message.channel.send(`<@${message.author.id}> you can repost your message ${difference}.`)
                     .then((msg) => {
                         setTimeout(() => {
                             msg.delete();
@@ -60,9 +59,9 @@ export default class MessageCreate extends Event {
             if (logs.length > 0) {
                 message.delete();
 
-                const time = logs[logs.length - 1].creation;
-                const difference = moment(time! + delay).fromNow(true);
-                message.channel.send(`<@${message.author.id}> please wait ${difference} before reposting.`)
+                const time = Math.round(logs[logs.length - 1].creation / 1000);
+                const difference = `<t:${time! + delay / 1000}:R>`;
+                message.channel.send(`<@${message.author.id}> you can repost your message ${difference}.`)
                     .then((msg) => {
                         setTimeout(() => {
                             msg.delete();
