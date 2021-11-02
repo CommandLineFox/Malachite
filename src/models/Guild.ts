@@ -34,11 +34,19 @@ interface LeaveLog {
     emote?: string;
 }
 
+interface Filter {
+    enabled: boolean;
+    words: string[];
+}
+
 interface Duplicates {
     detection?: boolean;
     log?: string;
     search?: string;
     time?: number;
+    filter?: Filter;
+    maxImageCount?: number;
+    imageLimit?: boolean;
 }
 
 interface Config {

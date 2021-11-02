@@ -38,7 +38,7 @@ export default class BotClient extends Client {
         }
 
         let mod = false;
-        for (const id in moderators) {
+        for (const id of moderators) {
             if (member.roles.cache.some(role => role.id === id)) {
                 mod = true;
             }

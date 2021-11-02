@@ -141,6 +141,10 @@ export async function verification(message: Message, client: BotClient): Promise
     await log.react("❌");
     await log.react("🔞");
 
+    const verification = guild.verifications.find((verification) => verification.user === message.author.id);
+    if (verification) {
+        await client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
+    }
     await client.database.guilds.updateOne({ id: guild.id }, { "$push": { "verifications": { user: message.author.id, message: log.id } } });
     await message.reply("Your request is being checked by staff.");
 }

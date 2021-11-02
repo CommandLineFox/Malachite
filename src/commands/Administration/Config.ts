@@ -151,6 +151,10 @@ export default class Config extends Command {
                     await autoAddUnverifiedSettings(event, option, guild);
                     break;
                 }
+
+                case "filter": {
+                    await filterSettings(event, option, args, guild);
+                }
             }
         } catch (error) {
             client.emit("error", (error as Error));
@@ -1008,6 +1012,74 @@ async function autoAddUnverifiedSettings(event: CommandEvent, option: string, gu
     }
 }
 
+async function filterSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
+    const database = event.client.database;
+
+    if (!option) {
+        await displayData(event, guild, "filter", true);
+        return;
+    }
+
+    switch (option.toLowerCase()) {
+        case "add": {
+            const word = args;
+
+            if (!word) {
+                event.send("You need to specify a word.");
+                return;
+            }
+
+            if (guild.config.duplicates?.filter?.words?.includes(word)) {
+                event.send("The specified word is already filtered.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$push": { "config.duplicates.filter.words": word } });
+            await event.send(`Added \`${word}\` to the filter.`);
+            break;
+        }
+
+        case "remove": {
+            const word = args;
+            if (!word) {
+                event.send("You need to specify a word.");
+                return;
+            }
+
+            if (!guild.config.duplicates?.filter?.words.includes(word)) {
+                event.send("The specified word isn't filtered.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$pull": { "config.duplicates.filter.words": word } });
+            await event.send(`Removed \`${word}\` from the filter.`);
+            break;
+        }
+
+        case "enable": {
+            if (guild.config.duplicates?.filter?.enabled) {
+                event.send("The word filter is already enabled.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.filter.enabled": true } });
+            await event.send("Enabled the word filter.");
+            break;
+        }
+
+        case "disable": {
+            if (!guild.config.duplicates?.filter?.enabled) {
+                event.send("The word filter is already disabled.");
+                return;
+            }
+
+            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.filter.enabled": false } });
+            await event.send("Disabled the word filter.");
+            break;
+        }
+    }
+}
+
 async function displayAllSettings(event: CommandEvent, guild: Guild) {
     const embed = new MessageEmbed()
         .setTitle("The current settings for this server:")
@@ -1035,6 +1107,7 @@ async function displayAllSettings(event: CommandEvent, guild: Guild) {
         .addField("Auto-remove NSFW", await displayData(event, guild, "autoremovensfw"), true)
         .addField("Auto-add unverified", await displayData(event, guild, "autoaddunverified"), true)
         .addField("Password", await displayData(event, guild, "password"), true)
+        .addField("Filter", await displayData(event, guild, "filter"), true)
         .setFooter(`Requested by ${event.author.tag}`, event.author.displayAvatarURL());
 
     event.send(embed);
@@ -1281,6 +1354,14 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
             case "autoaddunverified": {
                 return guild.config.autoAddUnverified === true ? "Enabled" : "Disabled";
             }
+
+            case "filter": {
+                if (!guild.config.duplicates?.filter) {
+                    return "Not set up";
+                }
+
+                return guild.config.duplicates.filter.enabled ? "Enabled" : "Disabled";
+            }
         }
     } else {
         switch (type.toLowerCase()) {
@@ -1483,6 +1564,33 @@ async function displayData(event: CommandEvent, guild: Guild, type: DisplayData,
                 }
 
                 await event.send(`The channel to welcome users in is <#${event.guild.channels.cache.get(guild.config.welcome.channel)}>`);
+                break;
+            }
+
+            case "filter": {
+                if (!guild.config.duplicates?.filter?.enabled) {
+                    event.send("The filter is disabled.");
+                    return;
+                }
+
+                const filter = guild.config.duplicates.filter.words;
+                if (!filter || filter.length === 0) {
+                    event.send("There is no filtered words.");
+                    return;
+                }
+
+                const embed = new MessageEmbed()
+                    .setTitle("The following words are filtered:")
+                    .setColor("#61e096")
+                    .setFooter(`Requested by ${event.author.tag}`, event.author.displayAvatarURL());
+
+                let list = "";
+                for (const word of filter) {
+                    list += `\`${word}\` `;
+                }
+
+                embed.setDescription(list);
+                event.send(embed);
                 break;
             }
         }

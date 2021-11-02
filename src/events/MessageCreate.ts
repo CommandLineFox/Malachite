@@ -32,6 +32,39 @@ export default class MessageCreate extends Event {
                 return;
             }
 
+            const staff = await client.isMod(message.member!, message.guild);
+            if (!staff && guild.config.duplicates.filter?.enabled) {
+                if (guild.config.duplicates.filter.words.length > 0) {
+                    const content = message.content.normalize().toLowerCase();
+                    let text = "";
+
+                    for (let i = 0; i < message.content.length; i++) {
+                        if (content[i] >= "a" && content[i] <= "z") {
+                            text += content[i];
+                        }
+                    }
+
+                    for (const word of guild.config.duplicates.filter.words) {
+                        if (text.includes(word)) {
+                            setTimeout(async () => {
+                                await message.delete()
+                                    .catch((error) => {
+                                        console.log(error);
+                                    });
+                            }, 100);
+
+                            message.channel.send(`<@${message.author.id}> please do not mention ${word} in your RP requests.`)
+                                .then((msg) => {
+                                    setTimeout(() => {
+                                        msg.delete();
+                                    }, 10000);
+                                });
+                            return;
+                        }
+                    }
+                }
+            }
+
             const delay = guild.config.duplicates.time;
             if (!delay) {
                 return;

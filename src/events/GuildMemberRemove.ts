@@ -20,15 +20,6 @@ export default class GuildMemberRemove extends Event {
                 return;
             }
 
-            const role = guild.roles.cache.get(guildDb.config.roles.member);
-            if (!role) {
-                return;
-            }
-
-            if (!member.roles.cache.has(role.id)) {
-                return;
-            }
-
             const verification = guildDb.verifications.find((verification) => verification.user === member.id);
             if (verification && guildDb.config.verification?.log) {
                 const verifyLog = client.channels.cache.get(guildDb.config.verification.log);
@@ -37,6 +28,15 @@ export default class GuildMemberRemove extends Event {
                     await message.reactions.removeAll();
                     await database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                 }
+            }
+
+            const role = guild.roles.cache.get(guildDb.config.roles.member);
+            if (!role) {
+                return;
+            }
+
+            if (!member.roles.cache.has(role.id)) {
+                return;
             }
 
             const channel = guild.channels.cache.get(guildDb.config.leaveLog?.channel) as TextChannel;
