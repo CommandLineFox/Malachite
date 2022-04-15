@@ -2,9 +2,9 @@ import type { CommandInteraction } from "discord.js";
 import type { BotClient } from "../../../../BotClient";
 import Subcommand from "../../../../command/Subcommand";
 
-export default class DuplicateLogSet extends Subcommand {
+export default class VerificationLogSet extends Subcommand {
     public constructor() {
-        super("set", "Set the channel for logging duplicates");
+        super("set", "Set the channel for logging verifications");
         this.data.addChannelOption(option =>
             option.setName("channel")
                 .setDescription("Choose the channel for logging verifications")
