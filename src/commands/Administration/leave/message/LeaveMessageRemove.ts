@@ -2,9 +2,9 @@ import type { CommandInteraction } from "discord.js";
 import type { BotClient } from "../../../../BotClient";
 import Subcommand from "../../../../command/Subcommand";
 
-export default class DuplicateSearchRemove extends Subcommand {
+export default class LeaveMessageRemove extends Subcommand {
     public constructor() {
-        super("remove", "Remove the channel to search in for duplicates");
+        super("remove", "Remove the leave message");
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
@@ -18,12 +18,12 @@ export default class DuplicateSearchRemove extends Subcommand {
             return;
         }
 
-        if (!guild.config.duplicates?.search) {
-            interaction.reply({ content: "The channel to search in for duplicates has not been set yet.", ephemeral: true });
+        if (!guild.config.leaveLog?.message) {
+            interaction.reply({ content: "The leave message has not been set yet.", ephemeral: true });
             return;
         }
 
-        await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.duplicates.search": "" } });
-        interaction.reply("The channel to search in for duplicates has been removed.");
+        await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.leaveLog.message": "" } });
+        interaction.reply("The leave message has been removed.");
     }
 }

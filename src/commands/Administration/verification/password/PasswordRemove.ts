@@ -2,9 +2,9 @@ import type { CommandInteraction } from "discord.js";
 import type { BotClient } from "../../../../BotClient";
 import Subcommand from "../../../../command/Subcommand";
 
-export default class DuplicateSearchRemove extends Subcommand {
+export default class VerificationPasswordRemove extends Subcommand {
     public constructor() {
-        super("remove", "Remove the channel to search in for duplicates");
+        super("remove", "Remove the password");
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
@@ -18,12 +18,12 @@ export default class DuplicateSearchRemove extends Subcommand {
             return;
         }
 
-        if (!guild.config.duplicates?.search) {
-            interaction.reply({ content: "The channel to search in for duplicates has not been set yet.", ephemeral: true });
+        if (!guild.config.verification?.password) {
+            interaction.reply({ content: "The password has not been set yet.", ephemeral: true });
             return;
         }
 
-        await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.duplicates.search": "" } });
-        interaction.reply("The channel to search in for duplicates has been removed.");
+        await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.password": "" } });
+        interaction.reply("The password has been removed.");
     }
 }

@@ -2,9 +2,9 @@ import type { CommandInteraction } from "discord.js";
 import type { BotClient } from "../../../../BotClient";
 import Subcommand from "../../../../command/Subcommand";
 
-export default class DuplicateSearchRemove extends Subcommand {
+export default class ProbationRoleRemove extends Subcommand {
     public constructor() {
-        super("remove", "Remove the channel to search in for duplicates");
+        super("remove", "Remove the probation role");
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
@@ -18,12 +18,12 @@ export default class DuplicateSearchRemove extends Subcommand {
             return;
         }
 
-        if (!guild.config.duplicates?.search) {
-            interaction.reply({ content: "The channel to search in for duplicates has not been set yet.", ephemeral: true });
+        if (!guild.config.roles?.probation) {
+            interaction.reply({ content: "The probation role has not been set yet.", ephemeral: true });
             return;
         }
 
-        await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.duplicates.search": "" } });
-        interaction.reply("The channel to search in for duplicates has been removed.");
+        await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.probation": "" } });
+        interaction.reply(`The probation role has been removed.`);
     }
 }
