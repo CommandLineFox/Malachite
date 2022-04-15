@@ -1,5 +1,3 @@
-import { ObjectId } from "bson";
-
 interface Roles {
     moderator?: string[];
     member?: string;
@@ -34,17 +32,11 @@ interface LeaveLog {
     emote?: string;
 }
 
-interface Filter {
-    enabled: boolean;
-    words: string[];
-}
-
 interface Duplicates {
     detection?: boolean;
     log?: string;
     search?: string;
     time?: number;
-    filter?: Filter;
     maxImageCount?: number;
     imageLimit?: boolean;
 }
@@ -61,7 +53,6 @@ interface Config {
 }
 
 export interface Guild {
-    _id: ObjectId;
     id: string;
     verifications: Verifications[];
     config: Config;

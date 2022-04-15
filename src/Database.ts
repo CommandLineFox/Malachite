@@ -1,19 +1,20 @@
-import { connect, Db, MongoClientOptions, Collection } from "mongodb";
-import { Guild } from "@models/Guild";
-import { Message } from "@models/Message";
+import { Collection, Db, MongoClient } from "mongodb";
+import type { Guild } from "./models/Guild";
+import type { Message } from "./models/Message";
 
 interface DatabaseConfig {
-    url: string;
     name: string;
-    mongoOptions?: MongoClientOptions;
+    url: string;
 }
 
 export class Database {
     public db!: Db;
+
     public constructor(protected config: DatabaseConfig) { }
 
     public async connect(): Promise<void> {
-        const client = await connect(this.config.url, this.config.mongoOptions)
+        const client = new MongoClient(this.config.url);
+        await client.connect()
             .catch(error => {
                 throw error;
             });
@@ -37,6 +38,6 @@ export class Database {
     }
 
     public get messages(): Collection<Message> {
-        return this.db.collection("messages");
+        return this.db.collection("infractions");
     }
 }

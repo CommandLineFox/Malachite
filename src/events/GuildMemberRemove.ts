@@ -1,13 +1,13 @@
-import Event from "@event/Event";
-import { GuildMember, TextChannel } from "discord.js";
-import MyntClient from "~/BotClient";
+import type { GuildMember, TextChannel } from "discord.js";
+import type { BotClient } from "../BotClient";
+import Event from "../event/Event";
 
 export default class GuildMemberRemove extends Event {
     public constructor() {
-        super({ name: "guildMemberRemove" });
+        super("guildMemberRemove");
     }
 
-    public async callback(client: MyntClient, member: GuildMember): Promise<void> {
+    public async callback(client: BotClient, member: GuildMember): Promise<void> {
         try {
             const guild = member.guild;
             const database = client.database;
@@ -51,7 +51,7 @@ export default class GuildMemberRemove extends Event {
                 message.react(guildDb.config.leaveLog.emote);
             }
         } catch (error) {
-            client.emit("error", (error as Error));
+            console.log(error);
         }
     }
 }

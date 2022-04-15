@@ -1,11 +1,11 @@
-import Event from "@event/Event";
-import BotClient from "~/BotClient";
-import { Message } from "discord.js";
-import { editVerification, verification } from "@utils/Utils";
+import type { Message } from "discord.js";
+import type { BotClient } from "../BotClient";
+import Event from "../event/Event";
+import { editVerification, verification } from "../utils/Utils";
 
 export default class MessageUpdate extends Event {
     public constructor() {
-        super({ name: "messageUpdate" });
+        super("messageUpdate");
     }
 
     public async callback(client: BotClient, oldMessage: Message, newMessage: Message): Promise<void> {
@@ -32,7 +32,7 @@ export default class MessageUpdate extends Event {
             }
 
         } catch (error) {
-            client.emit("error", (error as Error));
+            console.log(error);
         }
     }
 }

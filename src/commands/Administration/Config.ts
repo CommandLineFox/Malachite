@@ -33,20 +33,6 @@ export default class Config extends Command {
             }
 
             switch (subcommand.toLowerCase()) {
-                case "prefix": {
-                    await prefixSettings(event, option, args, guild);
-                    break;
-                }
-
-                case "staff": {
-                    await moderatorSettings(event, option, args, guild);
-                    break;
-                }
-
-                case "detection": {
-                    await duplicateDetectionSettings(event, option, guild);
-                    break;
-                }
 
                 case "search": {
                     await duplicateSearchSettings(event, option, args, guild);
@@ -150,10 +136,6 @@ export default class Config extends Command {
                 case "autoaddunverified": {
                     await autoAddUnverifiedSettings(event, option, guild);
                     break;
-                }
-
-                case "filter": {
-                    await filterSettings(event, option, args, guild);
                 }
             }
         } catch (error) {
@@ -1005,76 +987,8 @@ async function autoAddUnverifiedSettings(event: CommandEvent, option: string, gu
                 return;
             }
 
-            database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.leaveLog.autoAddUnverified": "" } });
+            database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.autoAddUnverified": "" } });
             await event.send("No longer automatically adding unverified role.");
-            break;
-        }
-    }
-}
-
-async function filterSettings(event: CommandEvent, option: string, args: string, guild: Guild) {
-    const database = event.client.database;
-
-    if (!option) {
-        await displayData(event, guild, "filter", true);
-        return;
-    }
-
-    switch (option.toLowerCase()) {
-        case "add": {
-            const word = args;
-
-            if (!word) {
-                event.send("You need to specify a word.");
-                return;
-            }
-
-            if (guild.config.duplicates?.filter?.words?.includes(word)) {
-                event.send("The specified word is already filtered.");
-                return;
-            }
-
-            await database.guilds.updateOne({ id: guild.id }, { "$push": { "config.duplicates.filter.words": word } });
-            await event.send(`Added \`${word}\` to the filter.`);
-            break;
-        }
-
-        case "remove": {
-            const word = args;
-            if (!word) {
-                event.send("You need to specify a word.");
-                return;
-            }
-
-            if (!guild.config.duplicates?.filter?.words.includes(word)) {
-                event.send("The specified word isn't filtered.");
-                return;
-            }
-
-            await database.guilds.updateOne({ id: guild.id }, { "$pull": { "config.duplicates.filter.words": word } });
-            await event.send(`Removed \`${word}\` from the filter.`);
-            break;
-        }
-
-        case "enable": {
-            if (guild.config.duplicates?.filter?.enabled) {
-                event.send("The word filter is already enabled.");
-                return;
-            }
-
-            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.filter.enabled": true } });
-            await event.send("Enabled the word filter.");
-            break;
-        }
-
-        case "disable": {
-            if (!guild.config.duplicates?.filter?.enabled) {
-                event.send("The word filter is already disabled.");
-                return;
-            }
-
-            await database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.filter.enabled": false } });
-            await event.send("Disabled the word filter.");
             break;
         }
     }

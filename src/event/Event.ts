@@ -1,17 +1,10 @@
-import BotClient from "~/BotClient";
+import type { BotClient } from "../BotClient";
 
-interface EventOptions {
-    readonly name: string;
-    readonly disabled?: boolean;
-}
-
-export default abstract class Event implements EventOptions {
+export default abstract class Event {
     public readonly name: string;
-    public readonly disabled: boolean;
 
-    public constructor(options: EventOptions) {
-        this.name = options.name;
-        this.disabled = options.disabled ?? false;
+    public constructor(name: string) {
+        this.name = name;
     }
 
     public abstract callback(client: BotClient, ...args: any[]): void;

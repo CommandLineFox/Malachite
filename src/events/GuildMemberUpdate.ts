@@ -1,14 +1,14 @@
-import Event from "@event/Event";
-import { GuildMember, TextChannel } from "discord.js";
-import MyntClient from "~/BotClient";
-import { Guild } from "@models/Guild";
+import type { GuildMember, TextChannel } from "discord.js";
+import type { BotClient } from "../BotClient";
+import Event from "../event/Event";
+import type { Guild } from "../models/Guild";
 
 export default class GuildMemberUpdate extends Event {
     public constructor() {
-        super({ name: "guildMemberUpdate" });
+        super("guildMemberUpdate");
     }
 
-    public async callback(client: MyntClient, oldMember: GuildMember, newMember: GuildMember): Promise<void> {
+    public async callback(client: BotClient, oldMember: GuildMember, newMember: GuildMember): Promise<void> {
         try {
             const guild = await client.database.getGuild(oldMember.guild.id);
             if (guild?.config.welcome?.notification && guild.config.welcome.channel && guild.config.welcome.message && guild.config.roles?.member) {
@@ -19,12 +19,12 @@ export default class GuildMemberUpdate extends Event {
                 nsfwRemove(guild, oldMember, newMember);
             }
         } catch (error) {
-            client.emit("error", (error as Error));
+            console.log(error);
         }
     }
 }
 
-function welcome(client: MyntClient, guild: Guild, oldMember: GuildMember, newMember: GuildMember) {
+function welcome(client: BotClient, guild: Guild, oldMember: GuildMember, newMember: GuildMember) {
     const channel = client.channels.cache.get(guild.config.welcome!.channel!);
     if (!channel) {
         return;

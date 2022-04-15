@@ -1,6 +1,6 @@
-import { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
+import type { Guild, GuildMember, User, Message, TextChannel } from "discord.js";
 import moment from "moment";
-import BotClient from "~/BotClient";
+import type { BotClient } from "../BotClient";
 
 export function splitArguments(argument: string, amount: number): string[] {
     const args = [];
@@ -9,7 +9,7 @@ export function splitArguments(argument: string, amount: number): string[] {
 
     while (index < argument.length) {
         if (args.length < amount - 1) {
-            if (argument[index].match(/\s/)) {
+            if (argument[index]!.match(/\s/)) {
                 if (element.trim().length > 0) {
                     args.push(element.trim());
                 }
@@ -51,7 +51,7 @@ export function sanitize(argument: string): string {
 
     let index = 0;
     while (index < argument.length) {
-        if (chars.includes(argument[index])) {
+        if (chars.includes(argument[index]!)) {
             sanitized += "\\";
         }
 
@@ -90,7 +90,7 @@ export function getDuration(argument: string): number | undefined {
 
     const regex = argument.toLowerCase().match(/^(?<amount>[0-9]+)(?<type>[smhdy]?)$/);
     if (regex && regex.groups) {
-        const amount = parseInt(regex.groups.amount);
+        const amount = parseInt(regex.groups.amount!);
 
         switch (regex.groups.type) {
             case "m": {

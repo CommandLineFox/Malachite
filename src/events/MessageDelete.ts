@@ -1,11 +1,11 @@
-import Event from "@event/Event";
-import BotClient from "~/BotClient";
-import { Message, TextChannel } from "discord.js";
-import { formatDuration, formatTime, formatUser, sanitize } from "@utils/Utils";
+import type { Message, TextChannel } from "discord.js";
+import type { BotClient } from "../BotClient";
+import Event from "../event/Event";
+import { formatTime, formatUser, formatDuration, sanitize } from "../utils/Utils";
 
 export default class MessageDelete extends Event {
     public constructor() {
-        super({ name: "messageDelete" });
+        super("messageDelete");
     }
 
     public async callback(client: BotClient, message: Message): Promise<void> {
@@ -60,7 +60,7 @@ export default class MessageDelete extends Event {
                 log.send(line);
             }
         } catch (error) {
-            client.emit("error", (error as Error));
+            console.log(error);
         }
     }
 }

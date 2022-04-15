@@ -1,14 +1,15 @@
-import Event from "@event/Event";
-import { MessageReaction, User } from "discord.js";
-import MyntClient from "~/BotClient";
-import { formatUser } from "@utils/Utils";
+import type { MessageReaction, User } from "discord.js";
+import moment from "moment";
+import type { BotClient } from "../BotClient";
+import Event from "../event/Event";
+import { formatUser } from "../utils/Utils";
 
 export default class MessageReactionAdd extends Event {
     public constructor() {
-        super({ name: "messageReactionAdd" });
+        super("messageReactionAdd");
     }
 
-    public async callback(client: MyntClient, messageReaction: MessageReaction, user: User): Promise<void> {
+    public async callback(client: BotClient, messageReaction: MessageReaction, user: User): Promise<void> {
         try {
             if (messageReaction.partial) {
                 messageReaction = await messageReaction.fetch();
@@ -30,6 +31,9 @@ export default class MessageReactionAdd extends Event {
                 return;
             }
 
+
+            const duration = moment(message.createdAt).fromNow(true);
+
             // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
             switch (messageReaction.emoji.name) {
                 case "✅": {
@@ -49,13 +53,13 @@ export default class MessageReactionAdd extends Event {
                             const member = server.members.cache.get(verification.user);
                             if (member) {
                                 await member.roles.add(memberRole);
-                                await message.edit(`✅ ${formatUser(member.user)} has been verified by ${user.tag}`);
+                                await message.edit(`✅ ${formatUser(member.user)} has been verified by ${user.tag} after ${duration}`);
                                 await message.reactions.removeAll();
                                 await client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                             }
                         }
                     } else {
-                        message.channel.send(`Couldn't find the member role, please add it via config with \`${await client.getPrefix(server)}config member set <role>\`.`)
+                        message.channel.send(`Couldn't find the member role, please add it via config with \`/config member set <role>\`.`)
                             .then((msg) => {
                                 setTimeout(async () => msg.delete(), 10000);
                             });
@@ -70,13 +74,13 @@ export default class MessageReactionAdd extends Event {
                             const member = server.members.cache.get(verification.user);
                             if (member) {
                                 member.roles.add(probation);
-                                message.edit(`❗ ${formatUser(member.user)} has been put on probation by ${user.tag}`);
+                                message.edit(`❗ ${formatUser(member.user)} has been put on probation by ${user.tag} after ${duration}`);
                                 message.reactions.removeAll();
                                 client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                             }
                         }
                     } else {
-                        message.channel.send(`Couldn't find the probation role, please add it via config with \`${await client.getPrefix(server)}config probation set <role>\`.`)
+                        message.channel.send(`Couldn't find the probation role, please add it via config with /config probation set <role>\`.`)
                             .then((msg) => {
                                 setTimeout(async () => msg.delete(), 10000);
                             });
@@ -90,7 +94,7 @@ export default class MessageReactionAdd extends Event {
                         if (member.kickable) {
                             const format = formatUser(member.user);
                             member.kick("Verification");
-                            message.edit(`❌ ${format} has been kicked by ${user.tag}`);
+                            message.edit(`❌ ${format} has been kicked by ${user.tag} after ${duration}`);
                             message.reactions.removeAll();
                             client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                         } else {
@@ -109,7 +113,7 @@ export default class MessageReactionAdd extends Event {
                         if (member.bannable) {
                             const format = formatUser(member.user);
                             member.ban({ reason: "Verification" });
-                            message.edit(`🔞 ${format} has been banned by ${user.tag}`);
+                            message.edit(`🔞 ${format} has been banned by ${user.tag} after ${duration}`);
                             message.reactions.removeAll();
                             client.database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                         } else {
@@ -123,7 +127,7 @@ export default class MessageReactionAdd extends Event {
                 }
             }
         } catch (error) {
-            client.emit("error", (error as Error));
+            console.log(error);
         }
     }
 }

@@ -1,17 +1,18 @@
-import Event from "@event/Event";
-import { GuildMember } from "discord.js";
-import MyntClient from "~/BotClient";
+import type { GuildMember } from "discord.js";
+import type { BotClient } from "../BotClient";
+import Event from "../event/Event";
 
 export default class GuildMemberAdd extends Event {
     public constructor() {
-        super({ name: "guildMemberAdd" });
+        super("guildMemberAdd");
     }
 
-    public async callback(client: MyntClient, member: GuildMember): Promise<void> {
+    public async callback(client: BotClient, member: GuildMember): Promise<void> {
         try {
             const guild = member.guild;
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
+
             if (guildDb?.config.roles?.unverified && guildDb.config.autoAddUnverified) {
                 const role = guild.roles.cache.get(guildDb.config.roles.unverified);
                 if (role) {
@@ -20,7 +21,7 @@ export default class GuildMemberAdd extends Event {
             }
 
         } catch (error) {
-            client.emit("error", (error as Error));
+            console.log(error);
         }
     }
 }
