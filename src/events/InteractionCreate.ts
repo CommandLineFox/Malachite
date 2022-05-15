@@ -1,4 +1,4 @@
-import type { ButtonInteraction, CommandInteraction, Interaction } from "discord.js";
+import { ButtonInteraction, CommandInteraction, Interaction, MessageActionRow, MessageButton } from "discord.js";
 import type { BotClient } from "../BotClient";
 import type Command from "../command/Command";
 import Event from "../event/Event";
@@ -65,7 +65,16 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
     const duration = moment(message.createdAt).fromNow(true);
 
     interaction.deferUpdate();
-    if (interaction.customId.match(/.*-approve$/)) {
+    if (interaction.customId.match(/.*-approve/)) {
+        if (interaction.customId.match(/.*-approve-probation$/) && dbGuild.config.roles?.probation) {
+            const probationRole = server.roles.cache.get(dbGuild.config.roles?.probation);
+            if (probationRole) {
+                const member = server.members.cache.get(verification.user);
+                if (member) {
+                    await member.roles.remove(probationRole);
+                }
+            }
+        }
         if (dbGuild.config.roles?.unverified) {
             const unverifiedRole = server.roles.cache.get(dbGuild.config.roles.unverified);
             if (unverifiedRole) {
@@ -95,16 +104,29 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
         }
     } else if (interaction.customId.match(/.*-probation$/)) {
         if (dbGuild.config.roles?.probation) {
-            const probation = server.roles.cache.get(dbGuild.config.roles.probation);
-            if (probation) {
+            const probationRole = server.roles.cache.get(dbGuild.config.roles.probation);
+            if (probationRole) {
                 const member = server.members.cache.get(verification.user);
                 if (member) {
-                    member.roles.add(probation);
-                    message.edit({
+                    await member.roles.add(probationRole);
+                    await message.edit({
                         content: `❗ ${formatUser(member.user)} has been put on probation by ${user.tag} after ${duration}`,
-                        components: message.components
+                        components: [ new MessageActionRow().addComponents(
+                            new MessageButton()
+                                .setCustomId(`${message.author.id}-approve-probation`)
+                                .setLabel("Approve")
+                                .setStyle('SUCCESS'),
+                            new MessageButton()
+                                .setCustomId(`${message.author.id}-kick`)
+                                .setLabel("Kick")
+                                .setStyle('DANGER'),
+                            new MessageButton()
+                                .setCustomId(`${message.author.id}-ban`)
+                                .setLabel("Ban")
+                                .setStyle('DANGER'),
+                        ) ]
                     });
-                    client.database.guilds.updateOne({ id: dbGuild.id }, { "$pull": { "verifications": verification } });
+                    await client.database.guilds.updateOne({ id: dbGuild.id }, { "$pull": { "verifications": verification } });
                 }
             }
         } else {
