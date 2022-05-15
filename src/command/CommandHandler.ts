@@ -4,7 +4,7 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import type Command from "./Command";
 import type Subcommand from "./Subcommand";
-import { SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
+import { SlashCommandSubcommandGroupBuilder } from "@discordjs/builders";
 
 export default class CommandHandler {
     protected client: BotClient;
@@ -135,7 +135,7 @@ export default class CommandHandler {
 
         const subcommand = this.getSubcommand(path);
         command.subcommands.set(subcommand.data.name, subcommand);
-        command.data.addSubcommand(new SlashCommandSubcommandBuilder().setName(subcommand.data.name).setDescription(subcommand.data.description));
+        command.data.addSubcommand(subcommand.data);
     }
 
     addSubcommandGroup(subcommands: Subcommand[], commandName: string, groupName: string, commandPath: string): void {

@@ -4,7 +4,7 @@ import type { BotClient } from "../../../BotClient";
 
 export default class Autiomation extends Command {
     public constructor() {
-        super("leave", "Configuring welcome messages", [], ["ADMINISTRATOR"]);
+        super("welcome", "Configuring welcome messages", [], ["ADMINISTRATOR"]);
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
