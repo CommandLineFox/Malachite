@@ -126,7 +126,6 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
                                 .setStyle('DANGER'),
                         ) ]
                     });
-                    await client.database.guilds.updateOne({ id: dbGuild.id }, { "$pull": { "verifications": verification } });
                 }
             }
         } else {
