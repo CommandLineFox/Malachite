@@ -1,4 +1,5 @@
-import type { Guild, GuildMember, User, Message, TextChannel } from "discord.js";
+import type { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
+import { MessageActionRow, MessageButton } from "discord.js"
 import moment from "moment";
 import type { BotClient } from "../BotClient";
 
@@ -134,12 +135,27 @@ export async function verification(message: Message, client: BotClient): Promise
     }
 
     const content = `Verification by user: ${formatUser(message.author)}:\n\n${message.cleanContent}`;
+    const actionRow = new MessageActionRow()
+        .addComponents(
+            new MessageButton()
+                .setCustomId(`${message.author.id}-approve`)
+                .setLabel("Approve")
+                .setStyle('SUCCESS'),
+            new MessageButton()
+                .setCustomId(`${message.author.id}-probation`)
+                .setLabel("Probation")
+                .setStyle('PRIMARY'),
+            new MessageButton()
+                .setCustomId(`${message.author.id}-kick`)
+                .setLabel("Kick")
+                .setStyle('DANGER'),
+            new MessageButton()
+                .setCustomId(`${message.author.id}-ban`)
+                .setLabel("Ban")
+                .setStyle('DANGER'),
+        );
 
-    const log = await (channel as TextChannel).send(content);
-    await log.react("✅");
-    await log.react("❗");
-    await log.react("❌");
-    await log.react("🔞");
+    const log = await (channel as TextChannel).send({ content: content, components: [actionRow] });
 
     const verification = guild.verifications.find((verification) => verification.user === message.author.id);
     if (verification) {
