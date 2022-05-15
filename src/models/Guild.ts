@@ -7,12 +7,12 @@ interface Roles {
     nsfw?: string;
 }
 
-interface Verifications {
+interface VerificationEntry {
     user: string;
     message: string;
 }
 
-interface Verification {
+interface VerificationSettings {
     enabled?: boolean;
     channel?: string;
     log?: string;
@@ -48,12 +48,12 @@ interface Config {
     autoAddUnverified?: boolean;
     duplicates?: Duplicates;
     leaveLog?: LeaveLog;
-    verification?: Verification;
+    verification?: VerificationSettings;
     welcome?: Welcome;
 }
 
 export interface Guild {
     id: string;
-    verifications: Verifications[];
+    verifications: VerificationEntry[];
     config: Config;
 }
