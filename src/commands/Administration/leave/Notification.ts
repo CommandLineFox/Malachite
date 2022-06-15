@@ -8,8 +8,7 @@ export default class LeaveNotification extends Subcommand {
         this.data.addStringOption(option =>
             option.setName("toggle")
                 .setDescription("Option")
-                .addChoice("Enable", "enable")
-                .addChoice("Disable", "disable")
+                .addChoices({ name: "Enable", value: "enable" }, { name: "Disable", value: "disable" })
                 .setRequired(true)
         )
     }
