@@ -34,7 +34,7 @@ export default class DuplicateLogSet extends Subcommand {
             return;
         }
 
-        await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.log": channel.id } });
+        await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.search": channel.id } });
         interaction.reply(`The channel to search in for duplicates has been set to <#${channel.id}>.`);
     }
 }
