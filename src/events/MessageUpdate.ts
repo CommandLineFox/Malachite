@@ -25,6 +25,10 @@ export default class MessageUpdate extends Event {
 
             const database = client.database;
             const guildDb = await database.getGuild(guild.id);
+            if (newMessage.channel.id !== guildDb?.config.verification?.channel) {
+                return;
+            }
+
             if (guildDb?.verifications.find(verification => verification.user === oldMessage.author.id)) {
                 editVerification(newMessage, client);
             } else if (guildDb?.config.verification?.enabled && guildDb.config.verification.password && guildDb.config.verification.channel && oldMessage.channel.id === guildDb.config.verification.channel && guildDb.config.verification.log) {
