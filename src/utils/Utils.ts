@@ -1,5 +1,5 @@
-import type { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
-import { MessageActionRow, MessageButton } from "discord.js"
+import { ButtonStyle, Guild, GuildMember, Message, TextChannel, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder } from "discord.js"
 import moment from "moment";
 import type { BotClient } from "../BotClient";
 
@@ -135,24 +135,24 @@ export async function verification(message: Message, client: BotClient): Promise
     }
 
     const content = `Verification by user: ${formatUser(message.author)}:\n\n${message.cleanContent}`;
-    const actionRow = new MessageActionRow()
+    const actionRow = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId(`${message.author.id}-approve`)
                 .setLabel("Approve")
-                .setStyle('SUCCESS'),
-            new MessageButton()
+                .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
                 .setCustomId(`${message.author.id}-probation`)
                 .setLabel("Probation")
-                .setStyle('PRIMARY'),
-            new MessageButton()
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
                 .setCustomId(`${message.author.id}-kick`)
                 .setLabel("Kick")
-                .setStyle('DANGER'),
-            new MessageButton()
+                .setStyle(ButtonStyle.Danger),
+            new ButtonBuilder()
                 .setCustomId(`${message.author.id}-ban`)
                 .setLabel("Ban")
-                .setStyle('DANGER'),
+                .setStyle(ButtonStyle.Danger),
         );
 
     const log = await (channel as TextChannel).send({ content: content, components: [actionRow] });

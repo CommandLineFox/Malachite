@@ -1,4 +1,4 @@
-import { ButtonInteraction, CommandInteraction, Interaction, MessageActionRow, MessageButton } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, CommandInteraction, Interaction, InteractionType } from "discord.js";
 import type { BotClient } from "../BotClient";
 import type Command from "../command/Command";
 import Event from "../event/Event";
@@ -11,7 +11,7 @@ export default class Ready extends Event {
     }
 
     public async callback(client: BotClient, interaction: Interaction): Promise<void> {
-        if (interaction.isCommand()) {
+        if (interaction.type === InteractionType.ApplicationCommand) {
             return handleCommandInteraction(client, interaction);
         }
         else if (interaction.isButton()) {
@@ -111,20 +111,21 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
                     await member.roles.add(probationRole);
                     await message.edit({
                         content: `❗ ${formatUser(member.user)} has been put on probation by ${user.tag} after ${duration}`,
-                        components: [ new MessageActionRow().addComponents(
-                            new MessageButton()
-                                .setCustomId(`${message.author.id}-approve-probation`)
-                                .setLabel("Approve")
-                                .setStyle('SUCCESS'),
-                            new MessageButton()
-                                .setCustomId(`${message.author.id}-kick`)
-                                .setLabel("Kick")
-                                .setStyle('DANGER'),
-                            new MessageButton()
-                                .setCustomId(`${message.author.id}-ban`)
-                                .setLabel("Ban")
-                                .setStyle('DANGER'),
-                        ) ]
+                        components: [new ActionRowBuilder<ButtonBuilder>()
+                            .addComponents(
+                                new ButtonBuilder()
+                                    .setCustomId(`${message.author.id}-approve-probation`)
+                                    .setLabel("Approve")
+                                    .setStyle(ButtonStyle.Success),
+                                new ButtonBuilder()
+                                    .setCustomId(`${message.author.id}-kick`)
+                                    .setLabel("Kick")
+                                    .setStyle(ButtonStyle.Danger),
+                                new ButtonBuilder()
+                                    .setCustomId(`${message.author.id}-ban`)
+                                    .setLabel("Ban")
+                                    .setStyle(ButtonStyle.Danger),
+                            )]
                     });
                 }
             }
@@ -173,18 +174,22 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
     }
 }
 
-function hasUserPermission(command: Command, interaction: Interaction): boolean {
-    if (interaction.memberPermissions && command.userPermissions) {
-        return interaction.memberPermissions.has(command.userPermissions);
+function hasUserPermission(command: Command, interaction: CommandInteraction): boolean {
+    if (!interaction.memberPermissions || !command.userPermissions) {
+        return false;
     }
 
-    return false;
+    return interaction.memberPermissions.has(command.userPermissions);
 }
 
-function hasBotPermission(command: Command, interaction: Interaction): boolean {
-    if (interaction.guild?.me?.permissions && command.botPermissions) {
-        return interaction.guild.me.permissions.has(command.botPermissions);
+function hasBotPermission(command: Command, interaction: CommandInteraction): boolean {
+    if (!command.botPermissions) {
+        return true;
     }
 
-    return false;
+    if (!interaction.guild?.members.me?.permissions) {
+        return false;
+    }
+
+    return interaction.guild.members.me.permissions.has(command.botPermissions);
 }

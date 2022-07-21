@@ -1,4 +1,4 @@
-import { Client, ClientOptions, Collection, Guild, GuildMember } from "discord.js";
+import { Client, ClientOptions, Collection } from "discord.js";
 import type Command from "./command/Command";
 import CommandHandler from "./command/CommandHandler";
 import type { Config } from "./Config";
@@ -21,34 +21,5 @@ export class BotClient extends Client {
         this.once("ready", () => {
             new CommandHandler(this);
         })
-    }
-
-    public async isMod(member: GuildMember, guild: Guild): Promise<boolean> {
-        if (this.isAdmin(member)) {
-            return true;
-        }
-
-        const guildModel = await this.database?.guilds.findOne({ id: guild.id });
-        if (!guildModel) {
-            return false;
-        }
-
-        const moderators = guildModel.config.roles?.moderator;
-        if (!moderators || moderators.length === 0) {
-            return false;
-        }
-
-        let mod = false;
-        for (const id of moderators) {
-            if (member.roles.cache.some(role => role.id === id)) {
-                mod = true;
-            }
-        }
-
-        return mod;
-    }
-
-    public isAdmin(member: GuildMember): boolean {
-        return member.permissions.has("ADMINISTRATOR");
     }
 }

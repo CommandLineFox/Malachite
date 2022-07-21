@@ -1,12 +1,12 @@
 import Command from "../../command/Command";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { CommandInteraction, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import type { BotClient } from "../../BotClient";
 import { formatDuration } from "../../utils/Utils";
 import type { Guild } from "../../models/Guild";
 
 export default class Autiomation extends Command {
     public constructor() {
-        super("list", "List all settings for current guild", [], ["ADMINISTRATOR"]);
+        super("list", "List all settings for current guild", undefined, PermissionFlagsBits.Administrator);
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
@@ -20,30 +20,33 @@ export default class Autiomation extends Command {
             return;
         }
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle("The current settings for this server:")
-            .addField("Duplicate detection", await displayData(interaction, client, guild,"detection"), true)
-            .addField("Duplicate search", await displayData(interaction, client, guild,"search"), true)
-            .addField("Deletion log", await displayData(interaction, client, guild, "deletion"), true)
-            .addField("Time", await displayData(interaction, client, guild,"time"), true)
-            .addField("Member role", await displayData(interaction, client, guild,"member"), true)
-            .addField("Unverified role", await displayData(interaction, client, guild, "unverified"), true)
-            .addField("Probation role", await displayData(interaction, client, guild, "probation"), true)
-            .addField("Verified role", await displayData(interaction, client, guild, "verified"), true)
-            .addField("Nsfw role", await displayData(interaction, client, guild, "nsfw"), true)
-            .addField("Leave notifications", await displayData(interaction, client, guild, "leavenotification"), true)
-            .addField("Leave channel", await displayData(interaction, client, guild, "leavechannel"), true)
-            .addField("Leave message", await displayData(interaction, client, guild, "leavemessage"), true)
-            .addField("Leave emote", await displayData(interaction, client, guild, "leaveemote"), true)
-            .addField("Verification", await displayData(interaction, client, guild,"verification"), true)
-            .addField("Verification channel", await displayData(interaction, client, guild, "verificationchannel"), true)
-            .addField("Verification log", await displayData(interaction, client, guild, "verificationlog"), true)
-            .addField("Welcome channel", await displayData(interaction, client, guild, "welcomechannel"), true)
-            .addField("Welcome message", await displayData(interaction, client, guild, "welcomemessage"), true)
-            .addField("Welcome notification", await displayData(interaction, client, guild, "welcomenotification"), true)
-            .addField("Auto-remove NSFW", await displayData(interaction, client, guild,"autoremovensfw"), true)
-            .addField("Auto-add unverified", await displayData(interaction, client, guild, "autoaddunverified"), true)
-            .addField("Password", await displayData(interaction, client, guild, "password"), true)
+            .addFields([
+                { name: "Duplicate detection", value: await displayData(interaction, client, guild, "detection"), inline: true },
+                { name: "Duplicate search", value: await displayData(interaction, client, guild, "search"), inline: true },
+                { name: "Deletion log", value: await displayData(interaction, client, guild, "deletion"), inline: true },
+                { name: "Time", value: await displayData(interaction, client, guild, "time"), inline: true },
+                { name: "Member role", value: await displayData(interaction, client, guild, "member"), inline: true },
+                { name: "Unverified role", value: await displayData(interaction, client, guild, "unverified"), inline: true },
+                { name: "Probation role", value: await displayData(interaction, client, guild, "probation"), inline: true },
+                { name: "Verified role", value: await displayData(interaction, client, guild, "verified"), inline: true },
+                { name: "Nsfw role", value: await displayData(interaction, client, guild, "nsfw"), inline: true },
+                { name: "Leave notifications", value: await displayData(interaction, client, guild, "leavenotification"), inline: true },
+                { name: "Leave channel", value: await displayData(interaction, client, guild, "leavechannel"), inline: true },
+                { name: "Leave message", value: await displayData(interaction, client, guild, "leavemessage"), inline: true },
+                { name: "Leave emote", value: await displayData(interaction, client, guild, "leaveemote"), inline: true },
+                { name: "Verification", value: await displayData(interaction, client, guild, "verification"), inline: true },
+                { name: "Verification channel", value: await displayData(interaction, client, guild, "verificationchannel"), inline: true },
+                { name: "Verification log", value: await displayData(interaction, client, guild, "verificationlog"), inline: true },
+                { name: "Welcome notification", value: await displayData(interaction, client, guild, "welcomenotification"), inline: true },
+                { name: "Welcome channel", value: await displayData(interaction, client, guild, "welcomechannel"), inline: true },
+                { name: "Welcome message", value: await displayData(interaction, client, guild, "welcomemessage"), inline: true },
+                { name: "Auto-remove NSFW", value: await displayData(interaction, client, guild, "autoremovensfw"), inline: true },
+                { name: "Auto-add unverified", value: await displayData(interaction, client, guild, "autoaddunverified"), inline: true },
+                { name: "Password", value: await displayData(interaction, client, guild, "password"), inline: true }
+            ])
+
         interaction.reply({ embeds: [embed] });
     }
 }

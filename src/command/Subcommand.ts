@@ -1,5 +1,4 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import type { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandSubcommandBuilder } from "discord.js";
 import type { BotClient } from "../BotClient";
 
 export default abstract class Subcommand {

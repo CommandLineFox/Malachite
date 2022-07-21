@@ -13,7 +13,7 @@ export default class WelcomeMessageSet extends Subcommand {
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
-        if (!interaction.guild) {
+        if (!interaction.guild || !interaction.isChatInputCommand()) {
             return;
         }
 

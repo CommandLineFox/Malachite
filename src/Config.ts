@@ -1,4 +1,4 @@
-import type { IntentsString, PartialTypes } from "discord.js";
+import type { GatewayIntentBits, Partials } from "discord.js";
 import { existsSync, readFileSync } from "fs";
 
 export interface Config {
@@ -8,8 +8,8 @@ export interface Config {
     owners: string[];
     options: {
         disableMentions: "all" | "everyone" | "none";
-        partials: PartialTypes[];
-        intents: IntentsString[];
+        partials: Partials[];
+        intents: GatewayIntentBits[];
     };
     database: {
         name: string;
