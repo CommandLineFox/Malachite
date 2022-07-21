@@ -175,7 +175,11 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
 }
 
 function hasUserPermission(command: Command, interaction: CommandInteraction): boolean {
-    if (!interaction.memberPermissions || !command.userPermissions) {
+    if (!command.userPermissions) {
+        return true;
+    }
+
+    if (!interaction.memberPermissions) {
         return false;
     }
 
