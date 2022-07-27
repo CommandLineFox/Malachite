@@ -124,7 +124,8 @@ export async function verification(message: Message, client: BotClient): Promise
     if (!guild?.config.verification?.enabled || !guild.config.verification.channel || !guild.config.verification.log || !guild.config.verification.password) {
         return;
     }
-    const password = await detectPassword(message.cleanContent, client, message.guild!.id);
+
+    const password = await detectPassword(message.content, client, message.guild!.id);
     if (!password) {
         return;
     }

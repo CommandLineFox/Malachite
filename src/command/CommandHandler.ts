@@ -80,7 +80,7 @@ export default class CommandHandler {
     }
 
     reloadCommands(): void {
-        const rest = new REST({ version: '9' }).setToken(this.client.config.token);
+        const rest = new REST({ version: '10' }).setToken(this.client.config.token);
 
         (async () => {
             try {
