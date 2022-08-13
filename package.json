@@ -1,5 +1,5 @@
 {
-  "name": "pokelust",
+  "name": "malachite",
   "version": "1.0.0",
   "description": "Utility bot for pokelust",
   "main": "dist/index.js",
@@ -9,18 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CommandLineFox/Pokelust.git"
+    "url": "git+https://github.com/CommandLineFox/Malachite.git"
   },
   "author": "CommandLineFox",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/CommandLineFox/Pokelust/issues"
+    "url": "https://github.com/CommandLineFox/Malachite/issues"
   },
-  "homepage": "https://github.com/CommandLineFox/Pokelust#readme",
+  "homepage": "https://github.com/CommandLineFox/Malachite#readme",
   "dependencies": {
     "@discordjs/rest": "^1.0.1",
-    "discord-api-types": "^0.36.3",
-    "discord.js": "^14.0.3",
+    "discord-api-types": "^0.37.2",
+    "discord.js": "^14.2.0",
     "moment": "^2.29.4",
     "mongodb": "^4.8.1",
     "typescript": "^4.7.4"

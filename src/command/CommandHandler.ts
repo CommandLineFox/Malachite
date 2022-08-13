@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, statSync } from "fs";
 import type { BotClient } from "../BotClient";
 import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
+import { Routes } from "discord-api-types/v10";
 import type Command from "./Command";
 import type Subcommand from "./Subcommand";
 import { SlashCommandSubcommandGroupBuilder } from "discord.js";
