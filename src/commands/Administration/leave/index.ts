@@ -1,6 +1,7 @@
 import Command from "../../../command/Command";
-import { CommandInteraction, PermissionFlagsBits } from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import type { BotClient } from "../../../BotClient";
+import { PermissionFlagsBits } from "discord-api-types/v10";
 
 export default class Autiomation extends Command {
     public constructor() {

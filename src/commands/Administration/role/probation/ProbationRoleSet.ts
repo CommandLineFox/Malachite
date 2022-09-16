@@ -13,6 +13,7 @@ export default class ProbationRoleSet extends Subcommand {
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
+        console.log(interaction);
         if (!interaction.guild || !interaction.isChatInputCommand()) {
             return;
         }

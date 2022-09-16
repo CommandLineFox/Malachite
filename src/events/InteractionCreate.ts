@@ -5,7 +5,7 @@ import Event from "../event/Event";
 import { formatUser } from "../utils/Utils"
 import moment from "moment"
 
-export default class Ready extends Event {
+export default class InteractionCreate extends Event {
     public constructor() {
         super("interactionCreate");
     }
