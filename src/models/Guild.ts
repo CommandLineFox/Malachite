@@ -41,6 +41,11 @@ interface Duplicates {
     imageLimit?: boolean;
 }
 
+interface VerifiedLog {
+    enabled?: boolean;
+    channel?: string;
+}
+
 interface Config {
     prefix?: string;
     roles?: Roles;
@@ -50,6 +55,7 @@ interface Config {
     leaveLog?: LeaveLog;
     verification?: VerificationSettings;
     welcome?: Welcome;
+    verifiedLog?: VerifiedLog;
 }
 
 export interface Guild {

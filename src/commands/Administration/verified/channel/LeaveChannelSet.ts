@@ -2,12 +2,12 @@ import { ChannelType, CommandInteraction } from "discord.js";
 import type { BotClient } from "../../../../BotClient";
 import Subcommand from "../../../../command/Subcommand";
 
-export default class WelcomeChannelSet extends Subcommand {
+export default class VerifiedLogChannelSet extends Subcommand {
     public constructor() {
-        super("set", "Set the channel to send join messages in");
+        super("set", "Set the channel to log when verified role is added to users");
         this.data.addChannelOption(option =>
             option.setName("channel")
-                .setDescription("Choose the channel for join messages")
+                .setDescription("Choose the channel for logging")
                 .setRequired(true)
         )
     }
@@ -24,17 +24,17 @@ export default class WelcomeChannelSet extends Subcommand {
         }
 
         const channel = interaction.options.getChannel("channel", true);
-        if (guild.config.welcome?.channel === channel.id) {
-            interaction.reply({ content: "The channel to send join messages in has already been set to the same channel.", ephemeral: true });
+        if (guild.config.leaveLog?.channel === channel.id) {
+            interaction.reply({ content: "The channel to log when verified role is added to users in has already been set to the same channel.", ephemeral: true });
             return;
         }
 
         if (channel.type !== ChannelType.GuildText) {
-            interaction.reply({ content: "The channel to send join messages in can only be a text channel.", ephemeral: true })
+            interaction.reply({ content: "The channel to log when verified role is added to users in can only be a text channel.", ephemeral: true })
             return;
         }
 
-        await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.welcome.channel": channel.id } });
-        interaction.reply(`The channel to send join messages in has been set to <#${channel.id}>.`);
+        await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.verifiedLog.channel": channel.id } });
+        interaction.reply(`The channel to log when verified role is added to users in has been set to <#${channel.id}>.`);
     }
 }

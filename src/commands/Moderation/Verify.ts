@@ -47,6 +47,6 @@ export default class Verify extends Command {
             return;
         }
 
-        console.log(member);
+        await member.roles.add(verified);
     }
 }

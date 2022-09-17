@@ -25,7 +25,7 @@ export default class LeaveChannelSet extends Subcommand {
 
         const channel = interaction.options.getChannel("channel", true);
         if (guild.config.leaveLog?.channel === channel.id) {
-            interaction.reply({ content: "The channel to send leave messages ins has already been set to the same channel.", ephemeral: true });
+            interaction.reply({ content: "The channel to send leave messages in has already been set to the same channel.", ephemeral: true });
             return;
         }
 
