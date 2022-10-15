@@ -1,2 +1,2 @@
-# Pokelust
-Utility bot for the Pokelust discord server
+# Malachite
+Utility bot for a discord server
