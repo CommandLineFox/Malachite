@@ -20,7 +20,7 @@ export default class VerificationToggle extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
@@ -28,23 +28,23 @@ export default class VerificationToggle extends Subcommand {
         switch (option.toLowerCase()) {
             case "enable": {
                 if (guild.config.verification?.enabled === true) {
-                    interaction.reply({ content: "Accepting verifications is already enabled.", ephemeral: true });
+                    await interaction.reply({ content: "Accepting verifications is already enabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.verification.enabled": true } });
-                interaction.reply("Accepting verifications has been enabled.");
+                await interaction.reply("Accepting verifications has been enabled.");
                 break;
             }
 
             case "disable": {
                 if (guild.config.verification?.enabled !== true) {
-                    interaction.reply({ content: "Accepting verifications is already disabled.", ephemeral: true });
+                    await interaction.reply({ content: "Accepting verifications is already disabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verification.enabled": "" } });
-                interaction.reply("Accepting verificationss has been disabled.");
+                await interaction.reply("Accepting verificationss has been disabled.");
                 break;
             }
         }

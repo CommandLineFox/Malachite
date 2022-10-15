@@ -25,25 +25,25 @@ export default class Verify extends Command {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
         const user = interaction.options.getUser("user", true);
         if (!user) {
-            interaction.reply({ content: "Couldn't find the user you're looking for.", ephemeral: true });
+            await interaction.reply({ content: "Couldn't find the user you're looking for.", ephemeral: true });
             return;
         }
 
         const member = await interaction.guild.members.fetch(user);
         if (!guild.config.roles?.verified) {
-            interaction.reply({ content: "There is no configured verified role.", ephemeral: true });
+            await interaction.reply({ content: "There is no configured verified role.", ephemeral: true });
             return;
         }
 
         const verified = await interaction.guild.roles.fetch(guild.config.roles.verified);
         if (!verified) {
-            interaction.reply({ content: "Couldn't find the verified role.", ephemeral: true });
+            await interaction.reply({ content: "Couldn't find the verified role.", ephemeral: true });
             return;
         }
 
@@ -57,13 +57,13 @@ export default class Verify extends Command {
 
         const probation = guild.config.roles.probation;
         if (!probation) {
-            interaction.reply({ content: "There is no configured probation role.", ephemeral: true });
+            await interaction.reply({ content: "There is no configured probation role.", ephemeral: true });
             return;
         }
 
         const probationRole = await interaction.guild.roles.fetch(probation);
         if (!probationRole) {
-            interaction.reply({ content: "Couldn't find the probation role.", ephemeral: true });
+            await interaction.reply({ content: "Couldn't find the probation role.", ephemeral: true });
             return;
         }
 

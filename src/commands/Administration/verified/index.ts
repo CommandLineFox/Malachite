@@ -15,7 +15,7 @@ export default class Verified extends Command {
         const group = interaction.options.getSubcommandGroup() ?? "";
         const subcommand = this.subcommands.get(this.data.name + " " + group + " " + interaction.options.getSubcommand()) ?? this.subcommands.get(this.data.name + " " + interaction.options.getSubcommand());
         if (!subcommand) {
-            interaction.reply({ content: "I was unable to find the command.", ephemeral: true });
+            await interaction.reply({ content: "I was unable to find the command.", ephemeral: true });
             return;
         }
 

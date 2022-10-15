@@ -19,22 +19,22 @@ export default class VerificationLogSet extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
         const channel = interaction.options.getChannel("channel", true);
         if (guild.config.verification?.log === channel.id) {
-            interaction.reply({ content: "The channel for logging verifications has already been set to the same channel.", ephemeral: true });
+            await interaction.reply({ content: "The channel for logging verifications has already been set to the same channel.", ephemeral: true });
             return;
         }
 
         if (channel.type !== ChannelType.GuildText) {
-            interaction.reply({ content: "The channel for logging verifications can only be a text channel.", ephemeral: true })
+            await interaction.reply({ content: "The channel for logging verifications can only be a text channel.", ephemeral: true })
             return;
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.verification.log": channel.id } });
-        interaction.reply(`The channel for logging verifications has been set to <#${channel.id}>.`);
+        await interaction.reply(`The channel for logging verifications has been set to <#${channel.id}>.`);
     }
 }

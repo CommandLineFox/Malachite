@@ -20,7 +20,7 @@ export default class RemoveNsfw extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
@@ -28,23 +28,23 @@ export default class RemoveNsfw extends Subcommand {
         switch (option.toLowerCase()) {
             case "enable": {
                 if (guild.config.autoRemoveNsfw === true) {
-                    interaction.reply({ content: "Automatically removing nsfw role from users on probation is already enabled.", ephemeral: true });
+                    await interaction.reply({ content: "Automatically removing nsfw role from users on probation is already enabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.autoRemoveNsfw": true } });
-                interaction.reply("Automatically removing nsfw role from users on probation has been enabled.");
+                await interaction.reply("Automatically removing nsfw role from users on probation has been enabled.");
                 break;
             }
 
             case "disable": {
                 if (guild.config.autoRemoveNsfw !== true) {
-                    interaction.reply({ content: "Automatically removing nsfw role from users on probation is already disabled.", ephemeral: true });
+                    await interaction.reply({ content: "Automatically removing nsfw role from users on probation is already disabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.autoRemoveNsfw": "" } });
-                interaction.reply("Automatically removing nsfw role from users on probation has been disabled.");
+                await interaction.reply("Automatically removing nsfw role from users on probation has been disabled.");
                 break;
             }
         }

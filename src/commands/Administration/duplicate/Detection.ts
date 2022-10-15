@@ -20,7 +20,7 @@ export default class DuplicateDetection extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
@@ -28,23 +28,23 @@ export default class DuplicateDetection extends Subcommand {
         switch (option.toLowerCase()) {
             case "enable": {
                 if (guild.config.duplicates?.detection === true) {
-                    interaction.reply({ content: "Searching for duplicates is already enabled.", ephemeral: true });
+                    await interaction.reply({ content: "Searching for duplicates is already enabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.detection": true } });
-                interaction.reply("Searching for duplicates has been enabled.");
+                await interaction.reply("Searching for duplicates has been enabled.");
                 break;
             }
 
             case "disable": {
                 if (guild.config.duplicates?.detection !== true) {
-                    interaction.reply({ content: "Searching for duplicates is already disabled.", ephemeral: true });
+                    await interaction.reply({ content: "Searching for duplicates is already disabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.duplicates.detection": "" } });
-                interaction.reply("Searching for duplicates has been disabled.");
+                await interaction.reply("Searching for duplicates has been disabled.");
                 break;
             }
         }

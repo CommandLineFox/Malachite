@@ -35,7 +35,7 @@ export default class MessageDelete extends Event {
             if (message.createdTimestamp < Date.now() - 5000) {
                 const row = await database.messages.findOne({ user: message.author.id, guild: guild.id, content: message.content });
                 if (!row) {
-                    database.messages.insertOne({ user: message.author.id, guild: guild.id, content: message.content, creation: message.createdTimestamp });
+                    await database.messages.insertOne({ user: message.author.id, guild: guild.id, content: message.content, creation: message.createdTimestamp });
                 }
             }
 
@@ -53,11 +53,11 @@ export default class MessageDelete extends Event {
                 const content = formatMessageDelete(message, true);
                 const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted from ${channel} that was sent **${creation} ago**:\n**Content:**`;
                 const attachment = { attachment: Buffer.from(content, "utf8"), name: "DeleteLog.txt" };
-                log.send({ content: line, files: [attachment] });
+                await log.send({ content: line, files: [attachment] });
             } else {
                 const content = formatMessageDelete(message);
                 const line = `${time} <:messageDelete:829444584575598612> Message sent by ${user} has been deleted from ${channel} that was sent **${creation} ago**: ${content}`;
-                log.send(line);
+                await log.send(line);
             }
         } catch (error) {
             console.log(error);

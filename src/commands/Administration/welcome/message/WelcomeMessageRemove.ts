@@ -8,22 +8,22 @@ export default class WelcomeMessageRemove extends Subcommand {
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
-        if (!interaction.guild) {
+        if (!interaction.guild || !interaction.isChatInputCommand()) {
             return;
         }
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
         if (!guild.config.welcome?.message) {
-            interaction.reply({ content: "The welcome message has not been set yet.", ephemeral: true });
+            await interaction.reply({ content: "The welcome message has not been set yet.", ephemeral: true });
             return;
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.welcome.message": "" } });
-        interaction.reply("The welcome message has been removed.");
+        await interaction.reply("The welcome message has been removed.");
     }
 }

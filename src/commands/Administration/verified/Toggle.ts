@@ -20,7 +20,7 @@ export default class ToggleVerifiedLogging extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
@@ -28,23 +28,23 @@ export default class ToggleVerifiedLogging extends Subcommand {
         switch (option.toLowerCase()) {
             case "enable": {
                 if (guild.config.verifiedLog?.enabled === true) {
-                    interaction.reply({ content: "Logging when verified role is added to users is already enabled.", ephemeral: true });
+                    await interaction.reply({ content: "Logging when verified role is added to users is already enabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.verifiedLog.enabled": true } });
-                interaction.reply("Logging when verified role is added to userss has been enabled.");
+                await interaction.reply("Logging when verified role is added to userss has been enabled.");
                 break;
             }
 
             case "disable": {
                 if (guild.config.verifiedLog?.enabled !== true) {
-                    interaction.reply({ content: "Logging when verified role is added to users is already disabled.", ephemeral: true });
+                    await interaction.reply({ content: "Logging when verified role is added to users is already disabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.verifiedLog.enabled": "" } });
-                interaction.reply("Logging when verified role is added to users has been disabled.");
+                await interaction.reply("Logging when verified role is added to users has been disabled.");
                 break;
             }
         }

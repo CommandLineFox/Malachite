@@ -20,23 +20,23 @@ export default class DuplicateTimeSet extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
         const option = interaction.options.getString("time", true);
         const time = getDuration(option);
         if (!time) {
-            interaction.reply({ content: "You need to enter a valid amount of time.", ephemeral: true });
+            await interaction.reply({ content: "You need to enter a valid amount of time.", ephemeral: true });
             return;
         }
 
         if (guild.config.duplicates?.time === time) {
-            interaction.reply({ content: "The time period is already set to that.", ephemeral: true });
+            await interaction.reply({ content: "The time period is already set to that.", ephemeral: true });
             return;
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.duplicates.time": time } });
-        interaction.reply(`The time period has been set to ${formatDuration(new Date(Date.now() + time), true)}.`);
+        await interaction.reply(`The time period has been set to ${formatDuration(new Date(Date.now() + time), true)}.`);
     }
 }

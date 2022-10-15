@@ -13,24 +13,23 @@ export default class ProbationRoleSet extends Subcommand {
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
-        console.log(interaction);
         if (!interaction.guild || !interaction.isChatInputCommand()) {
             return;
         }
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
         const role = interaction.options.getRole("role", true);
         if (guild.config.roles?.probation === role.id) {
-            interaction.reply({ content: "The probation role is already set to that.", ephemeral: true });
+            await interaction.reply({ content: "The probation role is already set to that.", ephemeral: true });
             return;
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.probation": role.id } });
-        interaction.reply(`The probation role has been set to **${role.name}**.`);
+        await interaction.reply(`The probation role has been set to **${role.name}**.`);
     }
 }

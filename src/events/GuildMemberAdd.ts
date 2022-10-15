@@ -16,7 +16,7 @@ export default class GuildMemberAdd extends Event {
             if (guildDb?.config.roles?.unverified && guildDb.config.autoAddUnverified) {
                 const role = guild.roles.cache.get(guildDb.config.roles.unverified);
                 if (role) {
-                    member.roles.add(role);
+                    await member.roles.add(role);
                 }
             }
 

@@ -18,7 +18,7 @@ export default class Ready extends Event {
                     continue;
                 }
 
-                database.messages.deleteMany({ guild: guild.id, creation: { "$lt": Date.now() - guild.config.duplicates.time } });
+                await database.messages.deleteMany({ guild: guild.id, creation: { "$lt": Date.now() - guild.config.duplicates.time } });
             }
         }, 30000);
     }

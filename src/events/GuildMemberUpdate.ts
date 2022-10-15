@@ -12,11 +12,11 @@ export default class GuildMemberUpdate extends Event {
         try {
             const guild = await client.database.getGuild(oldMember.guild.id);
             if (guild?.config.welcome?.notification && guild.config.welcome.channel && guild.config.welcome.message && guild.config.roles?.member) {
-                welcome(client, guild, oldMember, newMember);
+                await welcome(client, guild, oldMember, newMember);
             }
 
             if (guild?.config.autoRemoveNsfw && guild.config.roles?.probation && guild.config.roles.nsfw) {
-                nsfwRemove(guild, oldMember, newMember);
+                await nsfwRemove(guild, oldMember, newMember);
             }
 
             if (guild?.config.verifiedLog?.enabled) {
@@ -28,7 +28,7 @@ export default class GuildMemberUpdate extends Event {
     }
 }
 
-function welcome(client: BotClient, guild: Guild, oldMember: GuildMember, newMember: GuildMember) {
+async function welcome(client: BotClient, guild: Guild, oldMember: GuildMember, newMember: GuildMember) {
     const channel = client.channels.cache.get(guild.config.welcome!.channel!);
     if (!channel) {
         return;
@@ -49,11 +49,11 @@ function welcome(client: BotClient, guild: Guild, oldMember: GuildMember, newMem
 
     if (condition) {
         const line = guild.config.welcome!.message!.replace("{member}", `<@${newMember.user.id}>`).replace("{server}", newMember.guild.name);
-        (channel as TextChannel).send(line);
+        await (channel as TextChannel).send(line);
     }
 }
 
-function nsfwRemove(guild: Guild, oldMember: GuildMember, newMember: GuildMember) {
+async function nsfwRemove(guild: Guild, oldMember: GuildMember, newMember: GuildMember) {
     const probation = guild.config.roles!.probation!;
     const nsfw = guild.config.roles!.nsfw!;
 
@@ -63,7 +63,7 @@ function nsfwRemove(guild: Guild, oldMember: GuildMember, newMember: GuildMember
     const newProbation = newMember.roles.cache.has(probation);
 
     if (oldNsfw && newNsfw && !oldProbation && newProbation) {
-        newMember.roles.remove(nsfw);
+        await newMember.roles.remove(nsfw);
     }
 }
 

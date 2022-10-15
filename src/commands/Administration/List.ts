@@ -10,13 +10,13 @@ export default class Autiomation extends Command {
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
-        if (!interaction.guild) {
+        if (!interaction.guild || !interaction.isChatInputCommand()) {
             return;
         }
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
@@ -47,7 +47,7 @@ export default class Autiomation extends Command {
                 { name: "Password", value: await displayData(interaction, client, guild, "password"), inline: true }
             ])
 
-        interaction.reply({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed] });
     }
 }
 

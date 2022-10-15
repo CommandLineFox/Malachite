@@ -19,17 +19,17 @@ export default class UnverifiedRoleSet extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
         const role = interaction.options.getRole("role", true);
         if (guild.config.roles?.unverified === role.id) {
-            interaction.reply({ content: "The unverified role is already set to that.", ephemeral: true });
+            await interaction.reply({ content: "The unverified role is already set to that.", ephemeral: true });
             return;
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.roles.unverified": role.id } });
-        interaction.reply(`The unverified role has been set to **${role.name}**.`);
+        await interaction.reply(`The unverified role has been set to **${role.name}**.`);
     }
 }

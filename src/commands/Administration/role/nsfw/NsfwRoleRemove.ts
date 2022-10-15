@@ -8,22 +8,22 @@ export default class NsfwRoleRemove extends Subcommand {
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {
-        if (!interaction.guild) {
+        if (!interaction.guild || !interaction.isChatInputCommand()) {
             return;
         }
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
         if (!guild.config.roles?.nsfw) {
-            interaction.reply({ content: "The NSFW role has not been set yet.", ephemeral: true });
+            await interaction.reply({ content: "The NSFW role has not been set yet.", ephemeral: true });
             return;
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.roles.nsfw": "" } });
-        interaction.reply(`The NSFW role has been removed.`);
+        await interaction.reply(`The NSFW role has been removed.`);
     }
 }

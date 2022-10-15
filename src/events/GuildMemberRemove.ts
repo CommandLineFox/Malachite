@@ -48,7 +48,7 @@ export default class GuildMemberRemove extends Event {
             const line = guildDb.config.leaveLog?.message.replace("{member}", member.user.tag).replace("{server}", member.guild.name);
             const message = await channel.send(line);
             if (guildDb.config.leaveLog.emote) {
-                message.react(guildDb.config.leaveLog.emote);
+                await message.react(guildDb.config.leaveLog.emote);
             }
         } catch (error) {
             console.log(error);

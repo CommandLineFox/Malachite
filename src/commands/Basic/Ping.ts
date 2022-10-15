@@ -7,6 +7,6 @@ export default class Ping extends Command {
     }
 
     async execute(interaction: CommandInteraction): Promise<void> {
-        interaction.reply("Pong!");
+        await interaction.reply("Pong!");
     }
 }

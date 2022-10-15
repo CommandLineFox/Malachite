@@ -20,7 +20,7 @@ export default class WelcomeNotification extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
@@ -28,23 +28,23 @@ export default class WelcomeNotification extends Subcommand {
         switch (option.toLowerCase()) {
             case "enable": {
                 if (guild.config.welcome?.notification === true) {
-                    interaction.reply({ content: "Sending join messages is already enabled.", ephemeral: true });
+                    await interaction.reply({ content: "Sending join messages is already enabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.welcome.notification": true } });
-                interaction.reply("Sending join messages has been enabled.");
+                await interaction.reply("Sending join messages has been enabled.");
                 break;
             }
 
             case "disable": {
                 if (guild.config.welcome?.notification !== true) {
-                    interaction.reply({ content: "Sending join messages is already disabled.", ephemeral: true });
+                    await interaction.reply({ content: "Sending join messages is already disabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.welcome.notification": "" } });
-                interaction.reply("Sending join messages has been disabled.");
+                await interaction.reply("Sending join messages has been disabled.");
                 break;
             }
         }

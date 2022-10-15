@@ -20,7 +20,7 @@ export default class LeaveNotification extends Subcommand {
 
         const guild = await client.database.getGuild(interaction.guild.id);
         if (!guild) {
-            interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
+            await interaction.reply({ content: "There was an error while trying to reach the database.", ephemeral: true });
             return;
         }
 
@@ -28,23 +28,23 @@ export default class LeaveNotification extends Subcommand {
         switch (option.toLowerCase()) {
             case "enable": {
                 if (guild.config.leaveLog?.notification === true) {
-                    interaction.reply({ content: "Sending leave messages is already enabled.", ephemeral: true });
+                    await interaction.reply({ content: "Sending leave messages is already enabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.leaveLog.notification": true } });
-                interaction.reply("Sending leave messages has been enabled.");
+                await interaction.reply("Sending leave messages has been enabled.");
                 break;
             }
 
             case "disable": {
                 if (guild.config.leaveLog?.notification !== true) {
-                    interaction.reply({ content: "Sending leave messages is already disabled.", ephemeral: true });
+                    await interaction.reply({ content: "Sending leave messages is already disabled.", ephemeral: true });
                     return;
                 }
 
                 await client.database.guilds.updateOne({ id: guild.id }, { "$unset": { "config.leaveLog.notification": "" } });
-                interaction.reply("Sending leave messages has been disabled.");
+                await interaction.reply("Sending leave messages has been disabled.");
                 break;
             }
         }

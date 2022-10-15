@@ -12,7 +12,7 @@ async function main(): Promise<void> {
     await database.connect();
 
     const client = new BotClient(config, database, config.options);
-    client.login(config.token);
+    await client.login(config.token);
 }
 
 main();

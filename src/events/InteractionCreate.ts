@@ -27,11 +27,11 @@ async function handleCommandInteraction(client: BotClient, interaction: CommandI
     }
 
     if (!hasUserPermission(command, interaction)) {
-        interaction.reply({ content: "You're not allowed to execute this command", ephemeral: true });
+        await interaction.reply({ content: "You're not allowed to execute this command", ephemeral: true });
         return;
     }
     if (!hasBotPermission(command, interaction)) {
-        interaction.reply({ content: "I'm not allowed to execute this command", ephemeral: true });
+        await interaction.reply({ content: "I'm not allowed to execute this command", ephemeral: true });
     }
     try {
         command.execute(interaction, client);
@@ -140,14 +140,14 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
         if (member) {
             if (member.kickable) {
                 const format = formatUser(member.user);
-                member.kick("Verification");
-                message.edit({
+                await member.kick("Verification");
+                await message.edit({
                     content: `❌ ${format} has been kicked by ${user.tag} after ${duration}`,
                     components: []
                 });
-                client.database.guilds.updateOne({ id: dbGuild.id }, { "$pull": { "verifications": verification } });
+                await client.database.guilds.updateOne({ id: dbGuild.id }, { "$pull": { "verifications": verification } });
             } else {
-                message.channel.send("Couldn't kick the user. Please make sure my role has the right permissions and is above the user's highest role.")
+                await message.channel.send("Couldn't kick the user. Please make sure my role has the right permissions and is above the user's highest role.")
                     .then((msg) => {
                         setTimeout(async () => msg.delete(), 10000);
                     });
@@ -158,14 +158,14 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
         if (member) {
             if (member.bannable) {
                 const format = formatUser(member.user);
-                member.ban({ reason: "Verification" });
-                message.edit({
+                await member.ban({ reason: "Verification" });
+                await message.edit({
                     content: `🔞 ${format} has been banned by ${user.tag} after ${duration}`,
                     components: []
                 });
-                client.database.guilds.updateOne({ id: dbGuild.id }, { "$pull": { "verifications": verification } });
+                await client.database.guilds.updateOne({ id: dbGuild.id }, { "$pull": { "verifications": verification } });
             } else {
-                message.channel.send("Couldn't ban the user. Please make sure my role has the right permissions and is above the user's highest role.")
+                await message.channel.send("Couldn't ban the user. Please make sure my role has the right permissions and is above the user's highest role.")
                     .then((msg) => {
                         setTimeout(async () => msg.delete(), 10000);
                     });
