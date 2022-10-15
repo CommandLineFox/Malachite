@@ -124,6 +124,10 @@ async function checkVerified(guild: Guild, oldMember: GuildMember, newMember: Gu
             return;
         }
 
-        await message.edit(`Put on Probation and ${message.content}`);
+        if (message.content.includes(newMember.id)) {
+            await message.edit(`Put on Probation and ${message.content}`);
+        } else {
+            await (channel as TextChannel).send(`Given probation to ${newMember.user} (${newMember.id}) by ${executor.tag}`);
+        }
     }
 }
