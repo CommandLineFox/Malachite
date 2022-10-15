@@ -84,41 +84,60 @@ async function checkVerified(guild: Guild, oldMember: GuildMember, newMember: Gu
     const oldProbation = oldMember.roles.cache.has(probation);
     const newProbation = newMember.roles.cache.has(probation);
 
-    if ((oldVerified && !newVerified) || (!newVerified && oldProbation && !newProbation)) {
-        return;
-    }
+    if (!oldVerified && newVerified) {
+        const audit = await newMember.guild.fetchAuditLogs({ type: AuditLogEvent.MemberRoleUpdate });
+        const entry = audit.entries.first();
+        if (!entry) {
+            return;
+        }
 
-    const audit = await newMember.guild.fetchAuditLogs({ type: AuditLogEvent.MemberRoleUpdate });
-    const entry = audit.entries.first();
-    if (!entry) {
-        return;
-    }
+        const executor = entry.executor;
+        if (!executor) {
+            return;
+        }
 
-    const executor = entry.executor;
-    if (!executor) {
-        return;
-    }
+        const verifiedLog = guild.config.verifiedLog?.channel;
+        if (!verifiedLog) {
+            return;
+        }
 
-    const verifiedLog = guild.config.verifiedLog?.channel;
-    if (!verifiedLog) {
-        return;
-    }
+        const channel = await newMember.guild.channels.fetch(verifiedLog);
+        if (!channel) {
+            return;
+        }
 
-    const channel = await newMember.guild.channels.fetch(verifiedLog);
-    if (!channel) {
-        return;
-    }
-
-    if (!oldProbation && !newProbation) {
-        if (executor.bot && entry.reason) {
-            const member = await newMember.guild.members.fetch(entry.reason);
-            await (channel as TextChannel).send(`Verified ${newMember.user} (${newMember.id}) by ${member.user.tag}`);
-        } else {
-            await (channel as TextChannel).send(`Verified ${newMember.user} (${newMember.id}) by ${executor.tag}`);
+        if (!oldProbation && !newProbation) {
+            if (executor.bot && entry.reason) {
+                const member = await newMember.guild.members.fetch(entry.reason);
+                await (channel as TextChannel).send(`Verified ${newMember.user} (${newMember.id}) by ${member.user.tag}`);
+            } else {
+                await (channel as TextChannel).send(`Verified ${newMember.user} (${newMember.id}) by ${executor.tag}`);
+            }
         }
     }
 
-    if (!oldProbation && newProbation) {
+    if (newVerified && !oldProbation && newProbation) {
+        const audit = await newMember.guild.fetchAuditLogs({ type: AuditLogEvent.MemberRoleUpdate });
+        const entry = audit.entries.first();
+        if (!entry) {
+            return;
+        }
+
+        const executor = entry.executor;
+        if (!executor) {
+            return;
+        }
+
+        const verifiedLog = guild.config.verifiedLog?.channel;
+        if (!verifiedLog) {
+            return;
+        }
+
+        const channel = await newMember.guild.channels.fetch(verifiedLog);
+        if (!channel) {
+            return;
+        }
+
         const message = (channel as TextChannel).lastMessage;
         if (!message || message.author.id !== newMember.guild.members.me!.id) {
             return;
