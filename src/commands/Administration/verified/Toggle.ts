@@ -4,7 +4,7 @@ import Subcommand from "../../../command/Subcommand";
 
 export default class ToggleVerifiedLogging extends Subcommand {
     public constructor() {
-        super("unverified", "Toggle logging when verified role is added to users");
+        super("toggle", "Toggle logging when verified role is added to users");
         this.data.addStringOption(option =>
             option.setName("toggle")
                 .setDescription("Option")
@@ -27,7 +27,7 @@ export default class ToggleVerifiedLogging extends Subcommand {
         const option = interaction.options.getString("toggle", true);
         switch (option.toLowerCase()) {
             case "enable": {
-                if (guild.config.autoAddUnverified === true) {
+                if (guild.config.verifiedLog?.enabled === true) {
                     interaction.reply({ content: "Logging when verified role is added to users is already enabled.", ephemeral: true });
                     return;
                 }
@@ -38,7 +38,7 @@ export default class ToggleVerifiedLogging extends Subcommand {
             }
 
             case "disable": {
-                if (guild.config.autoAddUnverified !== true) {
+                if (guild.config.verifiedLog?.enabled !== true) {
                     interaction.reply({ content: "Logging when verified role is added to users is already disabled.", ephemeral: true });
                     return;
                 }

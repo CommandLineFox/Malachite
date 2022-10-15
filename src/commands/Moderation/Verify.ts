@@ -4,7 +4,7 @@ import type { BotClient } from "../../BotClient";
 
 export default class Verify extends Command {
     public constructor() {
-        super("ping", "Check's the bot's responsiveness", undefined, PermissionFlagsBits.ModerateMembers);
+        super("verify", "CVerifies a provided user", undefined, PermissionFlagsBits.ModerateMembers);
         this.data.addUserOption(option =>
             option.setName("user")
                 .setDescription("Member to be verified")
@@ -47,6 +47,27 @@ export default class Verify extends Command {
             return;
         }
 
-        await member.roles.add(verified);
+        await member.roles.add(verified, `${interaction.member?.user.id}`);
+
+        const prob = interaction.options.getString("probation");
+        if (!prob) {
+            await interaction.reply(`Successfully gave ${verified.name} to ${user.tag}`);
+            return;
+        }
+
+        const probation = guild.config.roles.probation;
+        if (!probation) {
+            interaction.reply({ content: "There is no configured probation role.", ephemeral: true });
+            return;
+        }
+
+        const probationRole = await interaction.guild.roles.fetch(probation);
+        if (!probationRole) {
+            interaction.reply({ content: "Couldn't find the probation role.", ephemeral: true });
+            return;
+        }
+
+        await member.roles.add(probationRole, `${interaction.member?.user.id}`);
+        await interaction.reply(`Successfully gave ${verified.name} and ${probationRole.name} to ${user.tag}`);
     }
 }

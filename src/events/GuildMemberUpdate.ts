@@ -1,4 +1,4 @@
-import type { GuildMember, TextChannel } from "discord.js";
+import { AuditLogEvent, GuildMember, TextChannel } from "discord.js";
 import type { BotClient } from "../BotClient";
 import Event from "../event/Event";
 import type { Guild } from "../models/Guild";
@@ -17,6 +17,10 @@ export default class GuildMemberUpdate extends Event {
 
             if (guild?.config.autoRemoveNsfw && guild.config.roles?.probation && guild.config.roles.nsfw) {
                 nsfwRemove(guild, oldMember, newMember);
+            }
+
+            if (guild?.config.verifiedLog?.enabled) {
+                await checkVerified(guild, oldMember, newMember);
             }
         } catch (error) {
             console.log(error);
@@ -60,5 +64,66 @@ function nsfwRemove(guild: Guild, oldMember: GuildMember, newMember: GuildMember
 
     if (oldNsfw && newNsfw && !oldProbation && newProbation) {
         newMember.roles.remove(nsfw);
+    }
+}
+
+async function checkVerified(guild: Guild, oldMember: GuildMember, newMember: GuildMember) {
+    const verified = guild.config.roles?.verified;
+    if (!verified) {
+        return;
+    }
+
+    const probation = guild.config.roles?.probation;
+    if (!probation) {
+        return;
+    }
+
+    const oldVerified = oldMember.roles.cache.has(verified);
+    const newVerified = newMember.roles.cache.has(verified);
+
+    const oldProbation = oldMember.roles.cache.has(probation);
+    const newProbation = newMember.roles.cache.has(probation);
+
+    if ((oldVerified && !newVerified) || (!newVerified && oldProbation && !newProbation)) {
+        return;
+    }
+
+    const audit = await newMember.guild.fetchAuditLogs({ type: AuditLogEvent.MemberRoleUpdate });
+    const entry = audit.entries.first();
+    if (!entry) {
+        return;
+    }
+
+    const executor = entry.executor;
+    if (!executor) {
+        return;
+    }
+
+    const verifiedLog = guild.config.verifiedLog?.channel;
+    if (!verifiedLog) {
+        return;
+    }
+
+    const channel = await newMember.guild.channels.fetch(verifiedLog);
+    if (!channel) {
+        return;
+    }
+
+    if (!oldProbation && !newProbation) {
+        if (executor.bot && entry.reason) {
+            const member = await newMember.guild.members.fetch(entry.reason);
+            await (channel as TextChannel).send(`Verified ${newMember.user} (${newMember.id}) by ${member.user.tag}`);
+        } else {
+            await (channel as TextChannel).send(`Verified ${newMember.user} (${newMember.id}) by ${executor.tag}`);
+        }
+    }
+
+    if (!oldProbation && newProbation) {
+        const message = (channel as TextChannel).lastMessage;
+        if (!message || message.author.id !== newMember.guild.members.me!.id) {
+            return;
+        }
+
+        await message.edit(`Put on Probation and ${message.content}`);
     }
 }
