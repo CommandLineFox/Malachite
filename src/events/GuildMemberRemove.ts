@@ -25,7 +25,7 @@ export default class GuildMemberRemove extends Event {
                 const verifyLog = client.channels.cache.get(guildDb.config.verification.log);
                 if (verifyLog) {
                     const message = await (verifyLog as TextChannel).messages.fetch(verification.message);
-                    await message.edit({ content: `🚪 **${member.user.tag} ${member.id}** has left the server`, components: [] });
+                    await message.edit({ content: `🚪 **${member.user.tag} (${member.id})** has left the server`, components: [] });
                     await database.guilds.updateOne({ id: guild.id }, { "$pull": { "verifications": verification } });
                 }
             }
