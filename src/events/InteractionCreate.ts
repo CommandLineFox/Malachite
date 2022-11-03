@@ -62,7 +62,7 @@ async function handleButtonInteraction(client: BotClient, interaction: ButtonInt
         return;
     }
 
-    const duration = moment(message.createdAt).fromNow(true);
+    const duration = moment(message.editedAt ?? message.createdAt).fromNow(true);
 
     interaction.deferUpdate();
     if (interaction.customId.match(/.*-approve/)) {
