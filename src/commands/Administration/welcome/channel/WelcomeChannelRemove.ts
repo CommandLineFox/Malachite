@@ -4,7 +4,7 @@ import Subcommand from "../../../../command/Subcommand";
 
 export default class WelcomeChannelRemove extends Subcommand {
     public constructor() {
-        super("remove", "Remove the channel to send leave messages in");
+        super("remove", "Remove the channel to send join messages in");
     }
 
     async execute(interaction: CommandInteraction, client: BotClient): Promise<void> {

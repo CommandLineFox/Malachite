@@ -30,6 +30,6 @@ export default class LeaveChannelSet extends Subcommand {
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.leaveLog.message": option } });
-        await interaction.reply(`The channel to send leave messages in has been set to:\n<#${option}>.`);
+        await interaction.reply(`The channel to send leave messages in has been set to:\n${option}.`);
     }
 }

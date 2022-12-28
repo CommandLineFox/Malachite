@@ -4,10 +4,10 @@ import Subcommand from "../../../../command/Subcommand";
 
 export default class WelcomeMessageSet extends Subcommand {
     public constructor() {
-        super("set", "Set the leave message, use {member} for mentioning the user and {server} for the server itself");
+        super("set", "Set the welcome message, use {member} for mentioning the user and {server} for the server itself");
         this.data.addStringOption(option =>
             option.setName("message")
-                .setDescription("The leave message")
+                .setDescription("The welcome message")
                 .setRequired(true)
         )
     }
@@ -30,6 +30,6 @@ export default class WelcomeMessageSet extends Subcommand {
         }
 
         await client.database.guilds.updateOne({ id: guild.id }, { "$set": { "config.welcome.message": option } });
-        await interaction.reply(`The channel to send welcome messages in has been set to:\n<#${option}>.`);
+        await interaction.reply(`The channel to send welcome messages in has been set to:\n${option}.`);
     }
 }
