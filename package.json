@@ -4,7 +4,8 @@
   "description": "Utility bot for pokelust",
   "main": "dist/index.js",
   "scripts": {
-    "build": "shx rm -rf ./dist/ && tsc --project tsconfig.json"
+    "build": "shx rm -rf ./dist/ && tsc --project tsconfig.json",
+    "start": "shx rm -rf ./dist/ && tsc --project tsconfig.json && node ."
   },
   "repository": {
     "type": "git",
@@ -17,12 +18,12 @@
   },
   "homepage": "https://github.com/CommandLineFox/Malachite#readme",
   "dependencies": {
-    "@discordjs/rest": "^1.5.0",
-    "discord-api-types": "^0.37.24",
-    "discord.js": "^14.7.1",
+    "@discordjs/rest": "^1.6.0",
+    "discord-api-types": "^0.37.37",
+    "discord.js": "^14.8.0",
     "moment": "^2.29.4",
-    "mongodb": "^4.13.0",
+    "mongodb": "^5.1.0",
     "shx": "^0.3.4",
-    "typescript": "^4.9.4"
+    "typescript": "^5.0.2"
   }
 }

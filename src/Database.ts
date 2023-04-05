@@ -38,6 +38,6 @@ export class Database {
     }
 
     public get messages(): Collection<Message> {
-        return this.db.collection("infractions");
+        return this.db.collection("messages");
     }
 }
